@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Memorable Password Generator + Tester",
+  "version": "0.1.0",
+  "action": {
+    "default_title": "Password Tool",
+    "default_popup": "popup/popup.html"
+  },
+  "options_page": "options/options.html",
+  "permissions": ["storage"],
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  }
+}

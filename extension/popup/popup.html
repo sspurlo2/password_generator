@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Password Tool</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Password Tool</h1>
+
+      <section class="card">
+        <h2>Generate</h2>
+
+        <div class="row">
+          <label>Mode</label>
+          <select id="mode">
+            <option value="passphrase" selected>Passphrase (memorable)</option>
+            <option value="random">Random (secure)</option>
+          </select>
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <label for="length">Target length</label>
+            <input id="length" type="number" min="8" max="128" value="18" />
+          </div>
+
+          <div class="row">
+            <label for="words"># Words (passphrase)</label>
+            <input id="words" type="number" min="2" max="10" value="4" />
+          </div>
+
+          <div class="row">
+            <label for="separator">Separator</label>
+            <input id="separator" type="text" maxlength="3" value="-" />
+          </div>
+
+          <div class="row">
+            <label>
+              <input id="cap" type="checkbox" checked />
+              Add Capitalization
+            </label>
+          </div>
+
+          <div class="row">
+            <label>
+              <input id="digit" type="checkbox" checked />
+              Add Digits
+            </label>
+          </div>
+
+          <div class="row">
+            <label>
+              <input id="symbol" type="checkbox" />
+              Add Symbols
+            </label>
+          </div>
+        </div>
+
+        <div class="row">
+          <button id="generateBtn">Generate</button>
+        </div>
+
+        <div class="row">
+          <label for="generated">Result</label>
+          <textarea id="generated" rows="2" readonly></textarea>
+          <div class="actions">
+            <button id="copyBtn">Copy</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Test a Password</h2>
+        <div class="row">
+          <label for="toTest">Password</label>
+          <input id="toTest" type="password" placeholder="Enter a password to test..." />
+        </div>
+
+        <div class="row actions">
+          <button id="testBtn">Test</button>
+          <label class="inline">
+            <input id="leakCheck" type="checkbox" />
+            Check leaked-password DB (optional)
+          </label>
+        </div>
+
+        <div id="results" class="results" aria-live="polite"></div>
+      </section>
+
+      <footer class="footer">
+        <a href="../options/options.html" target="_blank" rel="noreferrer">Options</a>
+      </footer>
+    </main>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
