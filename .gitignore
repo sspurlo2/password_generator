@@ -1,2 +1,4 @@
 create_password_extension_structure.sh
 docs/
+.DS_Store
+./extension/.DS_Store
