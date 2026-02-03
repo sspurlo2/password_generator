@@ -2,10 +2,13 @@
 // - passphrase mode: word-bank + separator + optional transformations
 // - random mode: strong random characters
 
+// FIXME, need to expand this to generate from a dictionary wordbank
+
 import { getWordBank } from "./uiModel.js";
 import { secureRandomInt, secureRandomChoice } from "./uiModel.js";
 
 const DEFAULT_SYMBOLS = "!@#$%^&*()_+-=[]{};:,.?";
+const SYMBOL_DICTIONARY = { "O":"0", "I":"1", "A":"@", "G":"6", "S":"$", "B":"8", "E":"3", "T": "+", "Z":"2" };
 
 function titleCase(word) {
   if (!word) return word;
@@ -29,6 +32,29 @@ function injectSymbol(pass, addSymbols) {
   if (!addSymbols) return pass;
   const sym = DEFAULT_SYMBOLS[secureRandomInt(0, DEFAULT_SYMBOLS.length)];
   return pass + sym;
+}
+
+function replaceDigits(pass, numReplacements) { // function that replaces letters/numbers with numbers/symbols
+  if (!numReplacements) return pass;
+  
+  const chars = pass.split("");
+  const indices = [];
+
+  chars.forEach((c, i) => {
+    if (SYMBOL_DICTIONARY[c.toUpperCase()]) { indices.push(i); }}); // push uppercase characters to the array
+    
+
+  for (let i = indices.length - 1; i > 0; i--) { // randomize which letter to replace
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+
+  for (let i = 0; i < Math.min(numReplacements, indices.length); i++) {
+    const idx = indices[i];
+    chars[idx] = SYMBOL_DICTIONARY[chars[idx].toUpperCase()];
+  }
+
+  return chars.join("");
 }
 
 function buildPassphrase({ numWords, separator, addCapitalization }) {
@@ -63,7 +89,8 @@ export function generatePassword(cfg) {
     separator = "-",
     addCapitalization = true,
     addDigits = true,
-    addSymbols = false
+    addSymbols = false,
+    numReplacements = false
   } = cfg;
 
   let pw;
@@ -73,6 +100,7 @@ export function generatePassword(cfg) {
     pw = buildPassphrase({ numWords, separator, addCapitalization });
     pw = injectDigits(pw, addDigits);
     pw = injectSymbol(pw, addSymbols);
+    pw = replaceDigits(pw, numReplacements)
 
     // If user wants minimum length, pad with extra word(s) rather than random chars
     while (pw.length < targetLength) {
