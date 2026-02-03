@@ -1,2 +1,5 @@
 create_password_extension_structure.sh
 docs/
+NOTWORKING_IGNORE/
+__pycache__/
+dist/
