@@ -2,4 +2,3 @@
 chrome.runtime.onInstalled.addListener(() => {
     console.log("Password extension installed.");
   });
-  
