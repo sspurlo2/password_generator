@@ -1,6 +1,6 @@
 // Lightweight strength assessment skeleton.
 // You can later swap in zxcvbn or your own model, but keep this interface stable.
-
+import { COMMON_PASSWORDS } from './common_passwords.js';
 function hasLower(s) { return /[a-z]/.test(s); }
 function hasUpper(s) { return /[A-Z]/.test(s); }
 function hasDigit(s) { return /[0-9]/.test(s); }
@@ -44,6 +44,21 @@ export function assessStrength(pw) {
   const len = pw.length;
   const sets = countCharSets(pw);
   const score = heuristicScore(pw);
+
+  // Check against known very common passwords
+  const normalized = pw.trim().toLowerCase();
+  if (COMMON_PASSWORDS.has(normalized)) {
+    reasons.push("Password appears in lists of extremely common passwords.");
+    suggestions.push("Choose a password not on common-password lists; use a long passphrase or a password manager.");
+    return {
+      score: 0,
+      scoreLabel: "Unacceptable",
+      reasons,
+      suggestions,
+      leaked: null,
+      unacceptable: true
+    };
+  }
 
   if (len < 12) {
     reasons.push("Short passwords are easier to guess or crack.");
