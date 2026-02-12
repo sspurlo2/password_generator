@@ -9,6 +9,10 @@ const DEFAULT_WORD_BANK = [
   export function getWordBank() {
     return DEFAULT_WORD_BANK;
   }
+chrome.storage.sync.get(["wordBank"], ({ wordBank }) => {
+  const bank = Array.isArray(wordBank) ? wordBank : [];
+    // use `bank` in your generator
+});
   
   // Crypto-safe random int in [min, max)
   export function secureRandomInt(min, max) {

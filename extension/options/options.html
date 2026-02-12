@@ -1,25 +1,51 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Password Tool Options</title>
+    <title>Password Generator - Options</title>
     <link rel="stylesheet" href="options.css" />
   </head>
+
   <body>
     <main class="container">
-      <h1>Options</h1>
+      <header class="header">
+        <h1>Options</h1>
+        <p class="subtext">Customize how your passwords are generated.</p>
+      </header>
 
       <section class="card">
-        <h2>Word Bank (coming soon)</h2>
-        <p>
-          In the next sprint, you can let users select a preset word bank
-          (e.g., “common words”, “tech words”, “nature words”) or upload their own.
+        <h2>Word Bank</h2>
+        <p class="help">
+          Enter words or short phrases (one per line). These can be used to generate
+          memorable passwords.
         </p>
-        <button id="resetBtn">Reset (placeholder)</button>
+
+        <label class="label" for="wordbank">Word bank entries</label>
+        <textarea
+          id="wordbank"
+          rows="10"
+          placeholder="e.g.\nblueberry\nriver\nsunset\ncloud nine"
+        ></textarea>
+
+        <div class="row">
+          <button id="saveBtn" type="button">Save</button>
+          <button id="clearBtn" type="button" class="secondary">Clear</button>
+          <span id="status" role="status" aria-live="polite"></span>
+        </div>
+
+        <details class="preview">
+          <summary>Preview / Quick Test</summary>
+          <div class="row">
+            <button id="generatePreviewBtn" type="button" class="secondary">
+              Generate example password
+            </button>
+            <code id="previewOut" class="code"></code>
+          </div>
+        </details>
       </section>
     </main>
 
-    <script type="module" src="options.js"></script>
+    <script src="options.js"></script>
   </body>
 </html>
