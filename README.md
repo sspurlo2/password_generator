@@ -15,7 +15,6 @@ Group: Lily Spurgat, Sam Spurlock, Kate Spencer
 
 ## Repo layout
 - `extension/` Chrome extension code (Manifest V3)
-- `docs/` proposal, midterm, final writeups + algorithm + privacy design
 
 ## Roadmap
 - Add real word bank selection + custom word lists (Options → storage)

@@ -11,6 +11,7 @@ const separator = $("separator");
 const cap = $("cap");
 const digit = $("digit");
 const symbol = $("symbol");
+const embed = $("embed");
 const generateBtn = $("generateBtn");
 const generated = $("generated");
 const copyBtn = $("copyBtn");
@@ -38,6 +39,9 @@ function renderResults(model) {
 }
 
 generateBtn.addEventListener("click", () => {
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/5859476a-1f0a-47c6-b1ed-24232e746d57',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:40',message:'Generate button clicked',data:{symbolChecked:symbol.checked},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+  // #endregion
   const cfg = {
     mode: mode.value,
     targetLength: Number(length.value),
@@ -45,8 +49,12 @@ generateBtn.addEventListener("click", () => {
     separator: separator.value,
     addCapitalization: cap.checked,
     addDigits: digit.checked,
-    addSymbols: symbol.checked
+    addSymbols: symbol.checked,
+    numReplacements: embed.checked ? 2 : false
   };
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/5859476a-1f0a-47c6-b1ed-24232e746d57',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:49',message:'Config before generatePassword',data:{cfg},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+  // #endregion
   generated.value = generatePassword(cfg);
 });
 
