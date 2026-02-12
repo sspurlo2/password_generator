@@ -1,0 +1,10 @@
+{
+  "extensionName": {
+    "message": "Memorable Password Generator + Tester",
+    "description": "Extension name"
+  },
+  "extensionDescription": {
+    "message": "Generate secure passwords and analyze password strength",
+    "description": "Extension description"
+  }
+}

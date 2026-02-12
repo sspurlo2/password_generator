@@ -1,15 +1,31 @@
 // Central place for word bank + crypto-safe randomness.
+// import { english as diceware } from "eff-diceware-passphrase";
 
-const DEFAULT_WORD_BANK = [
-    "duck", "forest", "river", "planet", "mango", "signal", "orbit", "hazel",
-    "canvas", "alpine", "lucky", "violet", "pioneer", "ember", "cobalt", "puzzle"
-  ];
-  
-  // Change to allow user to pick a word bank in options and store it in chrome.storage.
-  export function getWordBank() {
-    return DEFAULT_WORD_BANK;
+// const DEFAULT_WORD_BANK = Array.isArray(diceware) // normalize the array
+//   ? diceware
+//   : Object.values(diceware);
+
+let DEFAULT_WORD_BANK = null;
+
+// Pre-load the dictionary when the module loads
+fetch("../src/dictionary.json")
+  .then(response => response.json())
+  .then(data => {
+    DEFAULT_WORD_BANK = data;
+  })
+  .catch(err => {
+    console.error("Failed to load dictionary:", err);
+  });
+
+export function getWordBank() {
+  if (!DEFAULT_WORD_BANK) {
+    throw new Error("Dictionary not loaded yet. Please try again.");
   }
-  
+  return DEFAULT_WORD_BANK;
+}
+
+// Change to allow user to pick a word bank in options and store it in chrome.storage.
+
   // Crypto-safe random int in [min, max)
   export function secureRandomInt(min, max) {
     const range = max - min;
