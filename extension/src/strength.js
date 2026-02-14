@@ -1,6 +1,7 @@
 // Lightweight strength assessment skeleton.
 // You can later swap in zxcvbn or your own model, but keep this interface stable.
 import { COMMON_PASSWORDS } from './common_passwords.js';
+import { leakedPasswordCheck } from './leakedCheck.js';
 function hasLower(s) { return /[a-z]/.test(s); }
 function hasUpper(s) { return /[A-Z]/.test(s); }
 function hasDigit(s) { return /[0-9]/.test(s); }
@@ -37,7 +38,7 @@ function label(score) {
   return "Very weak";
 }
 
-export function assessStrength(pw) {
+export async function assessStrength(pw) {
   const reasons = [];
   const suggestions = [];
 
@@ -56,6 +57,20 @@ export function assessStrength(pw) {
       reasons,
       suggestions,
       leaked: null,
+      unacceptable: true
+    };
+  }
+
+  const isLeaked = await leakedPasswordCheck(pw); // check against the leaked dataset
+  if (isLeaked) {
+    reasons.push("This password has been found in leaked datasets.");
+    suggestions.push("Do not use this password anywhere. Choose a completely different password.");
+    return {
+      score: 0,
+      scoreLabel: "Unacceptable",
+      reasons,
+      suggestions,
+      leaked: true,
       unacceptable: true
     };
   }
@@ -90,11 +105,14 @@ export function assessStrength(pw) {
     suggestions.push("If a site rejects spaces, replace with '-' or another separator.");
   }
 
+  // Add positive indicator if password not found in leaked dataset
+  reasons.push("Password not found in leaked dataset.");
+
   return {
     score,
     scoreLabel: label(score),
     reasons,
     suggestions,
-    leaked: null // filled in optionally by leakedCheck.js
+    leaked: false
   };
 }

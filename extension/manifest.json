@@ -12,5 +12,11 @@
   "background": {
     "service_worker": "src/background.js",
     "type": "module"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["../src/crackstation-human-only.txt"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }
