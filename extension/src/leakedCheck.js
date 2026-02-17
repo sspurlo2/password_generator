@@ -1,7 +1,7 @@
 /* Kate Spencer
 Based on the Pwned API https://haveibeenpwned.com/api/v3 */
 
-
+import { heuristicScore, label} from './strength.js';
 
 // DEPRECATED -> KEEP FOR NOW
 
@@ -51,3 +51,19 @@ export async function leakedPasswordCheck(password) {
     else { return null; } // not leaked
   }
   
+export async function check_generated_password(pw) {
+  const score = heuristicScore(pw);
+  const leaked = await leakedPasswordCheck(pw);
+
+  const labelObj = label(score);
+  const scoreHTML = `<div class="pw-score"><strong>Score:</strong> ${score} — <span class="pw-label ${labelObj.className}">${labelObj.text}</span></div>`;
+
+  let leakedHTML;
+  if (leaked === null) {
+    leakedHTML = `<div class="pw-leak ok">Password has not been leaked.</div>`;
+  } else {
+    leakedHTML = `<div class="pw-leak leaked">Password has been leaked ${leaked} times. Please re-generate.</div>`;
+  }
+
+  return { scoreHTML, leakedHTML };
+}

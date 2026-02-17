@@ -18,14 +18,14 @@
   --input-border: #2b2f38;
 }
 
-/* light theme applied if the user prefers it */
+/* light theme applied if the user toggles it */
 .light-theme {
-    --text-color: #0b0c10;
+    --text-color: #181818;
     --background-color: #eae9eb;
     --card-background: #f1f1f2;
     --card-border: #e1dfe3;
-    --input-background: #eae9eb;
-    --input-border: #e1dfe3;
+    --input-background: #efedf0;
+    --input-border: #e7e5e9;
 }
 
 body {

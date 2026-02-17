@@ -1,6 +1,6 @@
-import { generatePassword, check_generated_password } from "../src/generator.js";
+import { generatePassword } from "../src/generator.js";
 import { assessStrength } from "../src/strength.js";
-import { leakedPasswordCheck } from "../src/leakedCheck.js";
+import { leakedPasswordCheck, check_generated_password } from "../src/leakedCheck.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -26,6 +26,7 @@ const results = $("results");
 fetch('http://127.0.0.1:7242/ingest/5859476a-1f0a-47c6-b1ed-24232e746d57',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:load',message:'Popup script loaded',data:{generateBtnExists:!!generateBtn,generatedExists:!!generated},timestamp:Date.now(),runId:'run1',hypothesisId:'A'})}).catch(()=>{});
 // #endregion
 
+
 const color_theme_checkbox = document.querySelector('.switch .input');
 if (color_theme_checkbox) {
   color_theme_checkbox.addEventListener('change', () => {
@@ -34,27 +35,6 @@ if (color_theme_checkbox) {
   });
 }
 
-
-function renderResults(model) {
-  const { scoreLabel, score, reasons, suggestions, leaked } = model;
-
-  const leakedLine = leaked == null
-    ? ""
-    : leaked
-      ? `<div><b>Leak check:</b> ⚠️ Found in leaked set</div>`
-      : `<div><b>Leak check:</b> ✅ Not found</div>`;
-
-  // scoreLabel is now an object: { text, className }
-  const labelText = scoreLabel?.text || scoreLabel;
-  const labelClass = scoreLabel?.className || "";
-
-  results.innerHTML = `
-    <div><b>Strength:</b> <span class="pw-label ${labelClass}">${labelText}</span> (${score}/100)</div>
-    ${leakedLine}
-    ${reasons?.length ? `<div style="margin-top:6px;"><b>Why:</b><ul>${reasons.map(r => `<li>${r}</li>`).join("")}</ul></div>` : ""}
-    ${suggestions?.length ? `<div style="margin-top:6px;"><b>Improve:</b><ul>${suggestions.map(s => `<li>${s}</li>`).join("")}</ul></div>` : ""}
-  `;
-}
 
 generateBtn.addEventListener("click", async () => {
   // #region agent log
@@ -96,12 +76,14 @@ generateBtn.addEventListener("click", async () => {
   }
 });
 
+
 copyBtn.addEventListener("click", async () => {
   if (!generated.value) return;
   await navigator.clipboard.writeText(generated.value);
   copyBtn.textContent = "Copied!";
   setTimeout(() => (copyBtn.textContent = "Copy"), 900);
 });
+
 
 testBtn.addEventListener("click", async () => {
   const pw = toTest.value ?? "";
@@ -122,5 +104,28 @@ testBtn.addEventListener("click", async () => {
     }
   }
 
-  renderResults(model);
+  await renderResults(model);
 });
+
+
+async function renderResults(model) {
+  const { scoreLabel, score, reasons, suggestions, leaked } = model;
+
+  let leakedLine = null;
+  if (leaked === false) {
+    leakedLine = `<div class="pw-leak ok"><b>Leak Check:</b>Password has not been leaked.</div>`;
+  } else {
+    leakedLine = `<div class="pw-leak leaked"><b>Leak Check:</b>Password has been leaked ${leaked} times. Please re-generate.</div>`;
+  }
+
+  // scoreLabel is now an object: { text, className }
+  const labelText = scoreLabel?.text || scoreLabel;
+  const labelClass = scoreLabel?.className || "";
+
+  results.innerHTML = `
+    <div><b>Strength:</b> <span class="pw-label ${labelClass}">${labelText}</span> (${score}/100)</div>
+    ${leakedLine}
+    ${reasons?.length ? `<div style="margin-top:6px;"><b>Why:</b><ul>${reasons.map(r => `<li>${r}</li>`).join("")}</ul></div>` : ""}
+    ${suggestions?.length ? `<div style="margin-top:6px;"><b>Improve:</b><ul>${suggestions.map(s => `<li>${s}</li>`).join("")}</ul></div>` : ""}
+  `;
+}

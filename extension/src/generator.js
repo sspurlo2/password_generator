@@ -6,9 +6,6 @@
 
 import { getWordBank } from "./uiModel.js";
 import { secureRandomInt, secureRandomChoice } from "./uiModel.js";
-import { heuristicScore, label} from './strength.js';
-import { leakedPasswordCheck } from './leakedCheck.js';
-
 
 const DEFAULT_SYMBOLS = "!@#$%^&*()_+-=[]{};:,.?";
 const SYMBOL_DICTIONARY = { "O":"0", "I":"1", "A":"@", "G":"6", "S":"$", "B":"8", "E":"3", "T": "+", "Z":"2" };
@@ -82,29 +79,6 @@ function buildRandom({ targetLength, addSymbols }) {
     out += alphabet[secureRandomInt(0, alphabet.length)];
   }
   return out;
-}
-
-export async function check_generated_password(pw) {
-  const score = heuristicScore(pw);
-  // let leaked = null;
-  // try {
-  //   leaked = await leakedPasswordCheck(pw);
-  // } catch (e) {
-  //   leaked = null;
-  // }
-  const leaked = await leakedPasswordCheck(pw);
-
-  const labelObj = label(score);
-  const scoreHTML = `<div class="pw-score"><strong>Score:</strong> ${score} — <span class="pw-label ${labelObj.className}">${labelObj.text}</span></div>`;
-
-  let leakedHTML;
-  if (leaked === null) {
-    leakedHTML = `<div class="pw-leak ok">Password has not been leaked.</div>`;
-  } else {
-    leakedHTML = `<div class="pw-leak leaked">Password has been leaked ${leaked} times. Please re-generate.</div>`;
-  }
-
-  return { scoreHTML, leakedHTML };
 }
 
 export function generatePassword(cfg) {
