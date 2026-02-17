@@ -3,6 +3,9 @@
   "name": "Memorable Password Generator + Tester",
   "version": "0.1.0",
   "default_locale": "en",
+  "icons": {
+    "128": "/icons/icon128.png"
+  },
   "action": {
     "default_title": "Password Tool",
     "default_popup": "popup/popup.html"
