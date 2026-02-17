@@ -18,6 +18,9 @@ fetch("../src/dictionary.json")
   });
 
 export function getWordBank() {
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/5859476a-1f0a-47c6-b1ed-24232e746d57',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'uiModel.js:getWordBank',message:'getWordBank called',data:{loaded:!!DEFAULT_WORD_BANK},timestamp:Date.now(),runId:'run1',hypothesisId:'F'})}).catch(()=>{});
+  // #endregion
   if (!DEFAULT_WORD_BANK) {
     throw new Error("Dictionary not loaded yet. Please try again.");
   }

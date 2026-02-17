@@ -12,7 +12,7 @@ function countCharSets(pw) {
 }
 
 // A simple heuristic score (0–100). Not perfect, but good enough to start testing.
-function heuristicScore(pw) {
+export function heuristicScore(pw) {
   const len = pw.length;
   const sets = countCharSets(pw);
 
@@ -30,7 +30,7 @@ function heuristicScore(pw) {
   return Math.max(0, Math.round(score));
 }
 
-function label(score) {
+export function label(score) {
   if (score >= 85) return "Very strong";
   if (score >= 70) return "Strong";
   if (score >= 50) return "Okay";
@@ -62,8 +62,8 @@ export async function assessStrength(pw) {
   }
 
   const isLeaked = await leakedPasswordCheck(pw); // check against the leaked dataset
-  if (isLeaked) {
-    reasons.push("This password has been found in leaked datasets.");
+  if (isLeaked != null) {
+    reasons.push(`This password has been compromised ${isLeaked} times.`);
     suggestions.push("Do not use this password anywhere. Choose a completely different password.");
     return {
       score: 0,

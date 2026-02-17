@@ -6,6 +6,9 @@
 
 import { getWordBank } from "./uiModel.js";
 import { secureRandomInt, secureRandomChoice } from "./uiModel.js";
+import { heuristicScore, label} from './strength.js';
+import { leakedPasswordCheck } from './leakedCheck.js';
+
 
 const DEFAULT_SYMBOLS = "!@#$%^&*()_+-=[]{};:,.?";
 const SYMBOL_DICTIONARY = { "O":"0", "I":"1", "A":"@", "G":"6", "S":"$", "B":"8", "E":"3", "T": "+", "Z":"2" };
@@ -81,7 +84,26 @@ function buildRandom({ targetLength, addSymbols }) {
   return out;
 }
 
+export function check_generated_password(pw) {
+  const score = heuristicScore(pw);
+  const leaked = leakedPasswordCheck(pw);
+
+  const scoreHTML = `<div class="pw-score"><strong>Score:</strong> ${score} — <span class="pw-label">${label(score)}</span></div>`;
+
+  let leakedHTML;
+  if (leaked === null || leaked === 0) {
+    leakedHTML = `<div class="pw-leak ok">Password has not been leaked.</div>`;
+  } else {
+    leakedHTML = `<div class="pw-leak leaked">Password has been leaked ${leaked} times. Please re-generate.</div>`;
+  }
+
+  return { scoreHTML, leakedHTML };
+}
+
 export function generatePassword(cfg) {
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/5859476a-1f0a-47c6-b1ed-24232e746d57',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'generator.js:generatePassword',message:'generatePassword entered',data:{mode:cfg?.mode},timestamp:Date.now(),runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+  // #endregion
   const {
     mode,
     targetLength = 18,
