@@ -1,21 +1,39 @@
-@font-face {
+/* @font-face {
   font-family: "SNPro";
   src: url("SNPro-VariableFont_wght.ttf") format("truetype");
-  font-weight: 100 900; /* variable font */
+  font-weight: 100 900; 
   font-style: normal;
+} */
+
+/* default dark theme is defined in :root */
+:root {
+  font-family: "SN Pro", system-ui, sans-serif;
+  font-optical-sizing: auto;
+
+  --text-color: #eaeaea;
+  --background-color: #0b0c10;
+  --card-background: #15171c;
+  --card-border: #23262d;
+  --input-background: #0f1116;
+  --input-border: #2b2f38;
 }
 
-:root {
-    /* font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; */
-    font-family: "SNPro", sans-serif;
-    font-size: 14px;
-  }
+/* light theme applied if the user prefers it */
+.light-theme {
+    --text-color: #0b0c10;
+    --background-color: #eae9eb;
+    --card-background: #f1f1f2;
+    --card-border: #e1dfe3;
+    --input-background: #eae9eb;
+    --input-border: #e1dfe3;
+}
 
 body {
   margin: 0;
   width: 360px;
-  background: #0b0c10;
-  color: #eaeaea;
+  background: var(--background-color);
+  color: var(--text-color);
+  font-weight: 400;
 }
 
 .container {
@@ -35,8 +53,8 @@ body {
 }
 
 .card {
-  background: #15171c;
-  border: 1px solid #23262d;
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
   padding: 10px;
   margin-bottom: 10px;
@@ -62,17 +80,9 @@ h2 {
 
 input, select, textarea, button {
   border-radius: 10px;
-  border: 1px solid #2b2f38;
-  background: #0f1116;
-  color: #eaeaea;
-  padding: 8px;
-}
-
-input.light, select.light, textarea.light, button.light {
-  border-radius: 10px;
-  border: 1px solid #2b2f38;
-  background: #0f1116;
-  color: #eaeaea;
+  border: 1px solid var(--input-border);
+  background: var(--input-background);
+  color: var(--text-color);
   padding: 8px;
 }
 
@@ -95,17 +105,9 @@ button {
 .results {
   padding: 8px;
   border-radius: 10px;
-  border: 1px dashed #2b2f38;
+  border: 1px dashed var(--input-border);
   min-height: 44px;
-  background: #0f1116;
-}
-
-.results.light {
-  padding: 8px;
-  border-radius: 10px;
-  border: 1px dashed #2b2f38;
-  min-height: 44px;
-  background: #0f1116;
+  background: var(--input-background);
 }
 
 .footer {
@@ -119,6 +121,13 @@ button {
   color: #d4af37; /* classic gold */
   font-weight: 600;
 }
+
+.very-strong { color: rgb(73, 179, 73); }
+.strong { color: rgb(146, 232, 146); }
+.okay { color: rgb(241, 219, 22); }
+.weak { color: rgb(232, 129, 39); }
+.very-weak { color: rgb(204, 6, 6); }
+
 
 .bs-scope {
   all: initial;

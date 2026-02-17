@@ -31,11 +31,11 @@ export function heuristicScore(pw) {
 }
 
 export function label(score) {
-  if (score >= 85) return "Very strong ★★★★★";
-  if (score >= 70) return "Strong ★★★★☆";
-  if (score >= 50) return "Okay ★★★☆☆";
-  if (score >= 30) return "Weak ★★☆☆☆";
-  return "Very weak ★☆☆☆☆";
+  if (score >= 85) return { text: "Very strong ★★★★★", className: "very-strong" };
+  if (score >= 70) return { text: "Strong ★★★★☆", className: "strong" };
+  if (score >= 50) return { text: "Okay ★★★☆☆", className: "okay" };
+  if (score >= 30) return { text: "Weak ★★☆☆☆", className: "weak" };
+  return { text: "Very weak ★☆☆☆☆", className: "very-weak" };
 }
 
 export async function assessStrength(pw) {

@@ -94,7 +94,8 @@ export async function check_generated_password(pw) {
   // }
   const leaked = await leakedPasswordCheck(pw);
 
-  const scoreHTML = `<div class="pw-score"><strong>Score:</strong> ${score} — <span class="pw-label">${label(score)}</span></div>`;
+  const labelObj = label(score);
+  const scoreHTML = `<div class="pw-score"><strong>Score:</strong> ${score} — <span class="pw-label ${labelObj.className}">${labelObj.text}</span></div>`;
 
   let leakedHTML;
   if (leaked === null) {

@@ -26,6 +26,15 @@ const results = $("results");
 fetch('http://127.0.0.1:7242/ingest/5859476a-1f0a-47c6-b1ed-24232e746d57',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:load',message:'Popup script loaded',data:{generateBtnExists:!!generateBtn,generatedExists:!!generated},timestamp:Date.now(),runId:'run1',hypothesisId:'A'})}).catch(()=>{});
 // #endregion
 
+const color_theme_checkbox = document.querySelector('.switch .input');
+if (color_theme_checkbox) {
+  color_theme_checkbox.addEventListener('change', () => {
+    document.documentElement.classList.toggle('light-theme');
+    // Optionally, save the user preference to local storage
+  });
+}
+
+
 function renderResults(model) {
   const { scoreLabel, score, reasons, suggestions, leaked } = model;
 
@@ -35,8 +44,12 @@ function renderResults(model) {
       ? `<div><b>Leak check:</b> ⚠️ Found in leaked set</div>`
       : `<div><b>Leak check:</b> ✅ Not found</div>`;
 
+  // scoreLabel is now an object: { text, className }
+  const labelText = scoreLabel?.text || scoreLabel;
+  const labelClass = scoreLabel?.className || "";
+
   results.innerHTML = `
-    <div><b>Strength:</b> ${scoreLabel} (${score}/100)</div>
+    <div><b>Strength:</b> <span class="pw-label ${labelClass}">${labelText}</span> (${score}/100)</div>
     ${leakedLine}
     ${reasons?.length ? `<div style="margin-top:6px;"><b>Why:</b><ul>${reasons.map(r => `<li>${r}</li>`).join("")}</ul></div>` : ""}
     ${suggestions?.length ? `<div style="margin-top:6px;"><b>Improve:</b><ul>${suggestions.map(s => `<li>${s}</li>`).join("")}</ul></div>` : ""}
