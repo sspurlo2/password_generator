@@ -15,5 +15,11 @@
   "background": {
     "service_worker": "src/background.js",
     "type": "module"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["SNPro-VariableFont_wght.ttf"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }
