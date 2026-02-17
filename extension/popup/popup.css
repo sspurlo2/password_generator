@@ -99,4 +99,10 @@
     opacity: 0.85;
     font-size: 12px;
   }
+
+  .pw-label {
+  color: #d4af37; /* classic gold */
+  font-weight: 600;
+}
+
   

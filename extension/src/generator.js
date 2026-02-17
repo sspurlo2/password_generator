@@ -84,14 +84,20 @@ function buildRandom({ targetLength, addSymbols }) {
   return out;
 }
 
-export function check_generated_password(pw) {
+export async function check_generated_password(pw) {
   const score = heuristicScore(pw);
-  const leaked = leakedPasswordCheck(pw);
+  // let leaked = null;
+  // try {
+  //   leaked = await leakedPasswordCheck(pw);
+  // } catch (e) {
+  //   leaked = null;
+  // }
+  const leaked = await leakedPasswordCheck(pw);
 
   const scoreHTML = `<div class="pw-score"><strong>Score:</strong> ${score} — <span class="pw-label">${label(score)}</span></div>`;
 
   let leakedHTML;
-  if (leaked === null || leaked === 0) {
+  if (leaked === null) {
     leakedHTML = `<div class="pw-leak ok">Password has not been leaked.</div>`;
   } else {
     leakedHTML = `<div class="pw-leak leaked">Password has been leaked ${leaked} times. Please re-generate.</div>`;

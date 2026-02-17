@@ -32,10 +32,6 @@ async function SHA1_hash(password) {
 }
 
 export async function leakedPasswordCheck(password) {
-    // load the cracked password list
-    // const cracked = await loadCrackedPasswords();
-    // return cracked.includes(password); // checks one-to-one
-
     const hash = await SHA1_hash(password); // generate hash based on password
     const prefix = hash.slice(0, 5);
     const suffix = hash.slice(5);
@@ -45,9 +41,9 @@ export async function leakedPasswordCheck(password) {
     const hashes = {};
     
     response_text.split('\n').forEach(line => {
-      const [hash, count] = line.split(':'); // split the response by 
-      if (hash) {
-        hashes[hash.trim().toUpperCase()] = parseInt(count, 10);
+      const [hash_suffix, count] = line.split(':'); // split the response by 
+      if (hash_suffix && count) {
+        hashes[hash.trim().toUpperCase()] = Number(count, 10);
       }
     });
     

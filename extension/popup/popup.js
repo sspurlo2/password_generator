@@ -12,9 +12,11 @@ const cap = $("cap");
 const digit = $("digit");
 const symbol = $("symbol");
 const embed = $("embed");
+const leakCheck = $("leakCheck");
 const generateBtn = $("generateBtn");
 const generated = $("generated");
 const copyBtn = $("copyBtn");
+const generatedInfo = $("generatedInfo");
 
 const toTest = $("toTest");
 const testBtn = $("testBtn");
@@ -41,7 +43,7 @@ function renderResults(model) {
   `;
 }
 
-generateBtn.addEventListener("click", () => {
+generateBtn.addEventListener("click", async () => {
   // #region agent log
   fetch('http://127.0.0.1:7242/ingest/5859476a-1f0a-47c6-b1ed-24232e746d57',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:44',message:'Generate button clicked',data:{},timestamp:Date.now(),runId:'run1',hypothesisId:'B'})}).catch(()=>{});
   // #endregion
@@ -64,11 +66,20 @@ generateBtn.addEventListener("click", () => {
     fetch('http://127.0.0.1:7242/ingest/5859476a-1f0a-47c6-b1ed-24232e746d57',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:60',message:'generatePassword returned',data:{pwLength:typeof pw=== 'string'? pw.length : -1},timestamp:Date.now(),runId:'run1',hypothesisId:'D'})}).catch(()=>{});
     // #endregion
     generated.value = pw;
+    if (generatedInfo) {
+      try {
+        const { scoreHTML, leakedHTML } = await check_generated_password(pw);
+        generatedInfo.innerHTML = scoreHTML + leakedHTML;
+      } catch (e) {
+        generatedInfo.innerHTML = "";
+      }
+    }
   } catch (e) {
     // #region agent log
     fetch('http://127.0.0.1:7242/ingest/5859476a-1f0a-47c6-b1ed-24232e746d57',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:65',message:'generatePassword threw',data:{err:String(e.message)},timestamp:Date.now(),runId:'run1',hypothesisId:'E'})}).catch(()=>{});
     // #endregion
     generated.value = "";
+    if (generatedInfo) generatedInfo.innerHTML = "";
   }
 });
 
@@ -89,13 +100,12 @@ testBtn.addEventListener("click", async () => {
   // Local strength assessment
   const model = await assessStrength(pw);
 
-  // Optional leak check (stubbed, wire later)
-  if (leakCheck.checked) {
-  try {
-    model.leaked = await leakedPasswordCheck(pw);
-  } catch (e) {
-    model.leaked = null;
-    model.suggestions.push("Leak check failed (offline/unconfigured).");
+  if (leakCheck?.checked) { // perform leak check
+    try {
+      model.leaked = await leakedPasswordCheck(pw);
+    } catch (e) {
+      model.leaked = null;
+      model.suggestions.push("Leak check failed (offline/unconfigured).");
     }
   }
 
