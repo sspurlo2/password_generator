@@ -73,7 +73,7 @@ testBtn.addEventListener("click", async () => {
   }
 
   // Local strength assessment
-  const model = assessStrength(pw);
+  const model = await assessStrength(pw);
 
   // Optional leak check (stubbed, wire later)
   if (leakCheck.checked) {

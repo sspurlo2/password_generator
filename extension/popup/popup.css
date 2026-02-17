@@ -52,6 +52,14 @@
     color: #eaeaea;
     padding: 8px;
   }
+
+  input.light, select.light, textarea.light, button.light {
+    border-radius: 10px;
+    border: 1px solid #2b2f38;
+    background: #0f1116;
+    color: #eaeaea;
+    padding: 8px;
+  }
   
   button {
     cursor: pointer;
@@ -70,6 +78,14 @@
   }
   
   .results {
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px dashed #2b2f38;
+    min-height: 44px;
+    background: #0f1116;
+  }
+
+    .results.light {
     padding: 8px;
     border-radius: 10px;
     border: 1px dashed #2b2f38;

@@ -1,24 +1,57 @@
-// Based on the info Kate found 
+/* Kate Spencer
+Based on the Pwned API https://haveibeenpwned.com/api/v3 */
 
-let crackedPasswords = null;
 
-async function loadCrackedPasswords() {
-  if (crackedPasswords) return crackedPasswords;
+
+// DEPRECATED -> KEEP FOR NOW
+
+// let crackedPasswords = null;
+// async function loadCrackedPasswords() { 
+//   if (crackedPasswords) return crackedPasswords;
+
+//   try {
+//     const path_to_file = "src/test.txt";
+//     const resolved_URL = chrome.runtime.getURL(path_to_file);
+//     const response = await fetch(resolved_URL);
+//     const text = await response.text();
+//     crackedPasswords = text.split('\n').map(pw => pw.trim()).filter(pw => pw.length > 0); // trim by line
+//     return crackedPasswords;
   
-  try {
-    const response = await fetch(chrome.runtime.getURL("../src/crackstation-human-only.txt"));
-    const text = await response.text();
-    crackedPasswords = text.split('\n').map(pw => pw.trim()).filter(pw => pw.length > 0); // split by newlines
-    return crackedPasswords;
-  } catch (error) {
-    console.error('Failed to load cracked passwords:', error);
-    return [];
-  }
+//   } catch (error) { // error shows up even though it does fetch
+//     console.error('Failed to load cracked passwords:', error);
+//     return [];
+//   }
+// }
+
+async function SHA1_hash(password) {
+  const encoded_password = new TextEncoder().encode(password);
+  const hash_buff = await crypto.subtle.digest('SHA-1', encoded_password); // crypto does not need to be imported
+  const hash_array = Array.from(new Uint8Array(hash_buff));
+
+  return hash_array.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
 }
 
 export async function leakedPasswordCheck(password) {
-    // Load the cracked passwords list
-    const cracked = await loadCrackedPasswords();
-    return cracked.includes(password); // checks one-to-one
+    // load the cracked password list
+    // const cracked = await loadCrackedPasswords();
+    // return cracked.includes(password); // checks one-to-one
+
+    const hash = await SHA1_hash(password); // generate hash based on password
+    const prefix = hash.slice(0, 5);
+    const suffix = hash.slice(5);
+
+    const response = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`); // result in form HASH:INT
+    const response_text = await response.text(); 
+    const hashes = {};
+    
+    response_text.split('\n').forEach(line => {
+      const [hash, count] = line.split(':'); // split the response by 
+      if (hash) {
+        hashes[hash.trim().toUpperCase()] = parseInt(count, 10);
+      }
+    });
+    
+    if (hashes[suffix]) { return hashes[suffix]; } // check if the suffix matches
+    else { return null; } // not leaked
   }
   
