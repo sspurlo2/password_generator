@@ -35,42 +35,42 @@ export function label(score) {
   if (score >= 70) return { text: "Strong ★★★★☆", className: "strong" };
   if (score >= 50) return { text: "Okay ★★★☆☆", className: "okay" };
   if (score >= 30) return { text: "Weak ★★☆☆☆", className: "weak" };
-  return { text: "Very weak ★☆☆☆☆", className: "very-weak" };
+  if (score >= 10) return { text: "Very weak ★☆☆☆☆", className: "very-weak" };
+  return { text: "Unacceptable ☆☆☆☆☆", className: "unacceptable" };
 }
+
 
 export async function assessStrength(pw) {
   const reasons = [];
   const suggestions = [];
-
   const len = pw.length;
   const sets = countCharSets(pw);
   const score = heuristicScore(pw);
-
-  // Check against known very common passwords
   const normalized = pw.trim().toLowerCase();
+
+  // Check both common and leaked lists
+  let isCommon = false;
+  let isLeaked = null;
+
   if (COMMON_PASSWORDS.has(normalized)) {
+    isCommon = true;
     reasons.push("Password appears in lists of extremely common passwords.");
     suggestions.push("Choose a password not on common-password lists; use a long passphrase or a password manager.");
-    return {
-      score: 0,
-      scoreLabel: "Unacceptable",
-      reasons,
-      suggestions,
-      leaked: null,
-      unacceptable: true
-    };
   }
 
-  const isLeaked = await leakedPasswordCheck(pw); // check against the leaked dataset
-  if (isLeaked != null) {
-    reasons.push(`This password has been compromised ${isLeaked} times.`);
+  isLeaked = await leakedPasswordCheck(pw);
+  if (typeof isLeaked === "number" && isLeaked > 0) {
+    reasons.push(`This password has been leaked <span class=\"leak-count\">${isLeaked}</span> times.`);
     suggestions.push("Do not use this password anywhere. Choose a completely different password.");
+  }
+
+  if (isCommon || (typeof isLeaked === "number" && isLeaked > 0)) {
     return {
       score: 0,
-      scoreLabel: "Unacceptable",
+      scoreLabel: label(0),
       reasons,
       suggestions,
-      leaked: true,
+      leaked: isLeaked,
       unacceptable: true
     };
   }

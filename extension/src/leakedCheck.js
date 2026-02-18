@@ -43,7 +43,7 @@ export async function leakedPasswordCheck(password) {
     response_text.split('\n').forEach(line => {
       const [hash_suffix, count] = line.split(':'); // split the response by 
       if (hash_suffix && count) {
-        hashes[hash.trim().toUpperCase()] = Number(count, 10);
+        hashes[hash_suffix.trim().toUpperCase()] = Number(count, 10);
       }
     });
     
@@ -56,13 +56,13 @@ export async function check_generated_password(pw) {
   const leaked = await leakedPasswordCheck(pw);
 
   const labelObj = label(score);
-  const scoreHTML = `<div class="pw-score"><strong>Score:</strong> ${score} — <span class="pw-label ${labelObj.className}">${labelObj.text}</span></div>`;
+  const scoreHTML = `<div class="pw-score"><strong>Score:</strong> ${score}/100, <span class="pw-label ${labelObj.className}">${labelObj.text}</span></div>`;
 
   let leakedHTML;
   if (leaked === null) {
-    leakedHTML = `<div class="pw-leak ok">Password has not been leaked.</div>`;
+    leakedHTML = `<div class="pw-leak ok"><strong>Leak Check:</strong> Password has not been leaked.</div>`;
   } else {
-    leakedHTML = `<div class="pw-leak leaked">Password has been leaked ${leaked} times. Please re-generate.</div>`;
+    leakedHTML = `<div class="pw-leak leaked"><strong>Leak Check:</strong> Password has been leaked <span class="leak-count">${leaked}</span> times. Please re-generate.</div>`;
   }
 
   return { scoreHTML, leakedHTML };

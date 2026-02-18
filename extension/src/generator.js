@@ -1,14 +1,110 @@
 // Generator supports:
 // - passphrase mode: word-bank + separator + optional transformations
 // - random mode: strong random characters
+//
+// Custom word bank is stored in chrome.storage.sync under key: "customWordBank"
 
-// FIXME, need to expand this to generate from a dictionary wordbank
-
-import { getWordBank } from "./uiModel.js";
-import { secureRandomInt, secureRandomChoice } from "./uiModel.js";
+import { getWordBank, secureRandomInt, secureRandomChoice } from "./uiModel.js";
 
 const DEFAULT_SYMBOLS = "!@#$%^&*()_+-=[]{};:,.?";
-const SYMBOL_DICTIONARY = { "O":"0", "I":"1", "A":"@", "G":"6", "S":"$", "B":"8", "E":"3", "T": "+", "Z":"2" };
+const SYMBOL_DICTIONARY = {
+  O: "0",
+  I: "1",
+  A: "@",
+  G: "6",
+  S: "$",
+  B: "8",
+  E: "3",
+  T: "+",
+  Z: "2",
+};
+
+// ---- Custom word bank support (from Options page) ----
+export const WORD_BANK_STORAGE_KEY = "customWordBank";
+let CACHED_CUSTOM_WORD_BANK = null;
+
+function hasChromeStorage() {
+  return typeof chrome !== "undefined" && chrome?.storage?.sync;
+}
+
+function normalizeWordBank(raw) {
+  let arr = [];
+
+  if (Array.isArray(raw)) {
+    arr = raw;
+  } else if (typeof raw === "string") {
+    arr = raw
+      .split(/[\n,]+/g)
+      .map((w) => w.trim())
+      .filter(Boolean);
+  }
+
+  const cleaned = [];
+  const seen = new Set();
+
+  for (const w of arr) {
+    const word = String(w).trim();
+    if (!word) continue;
+
+    const safe = word.replace(/[^\p{L}\p{N}'-]/gu, "");
+    if (!safe) continue;
+
+    const key = safe.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    cleaned.push(safe);
+  }
+
+  return cleaned.length >= 5 ? cleaned : null;
+}
+
+/**
+ * Force-refresh the cached custom word bank from chrome.storage.sync.
+ * Call this after Save/Reset so popup/preview uses the newest word bank immediately.
+ */
+export async function refreshCustomWordBank() {
+  if (!hasChromeStorage()) return null;
+
+  return new Promise((resolve) => {
+    try {
+      chrome.storage.sync.get([WORD_BANK_STORAGE_KEY], (res) => {
+        CACHED_CUSTOM_WORD_BANK = normalizeWordBank(res?.[WORD_BANK_STORAGE_KEY]);
+        resolve(CACHED_CUSTOM_WORD_BANK);
+      });
+    } catch (e) {
+      CACHED_CUSTOM_WORD_BANK = null;
+      resolve(null);
+    }
+  });
+}
+
+function attachStorageListeners() {
+  if (!hasChromeStorage()) return;
+
+  try {
+    chrome.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName !== "sync") return;
+      if (!changes[WORD_BANK_STORAGE_KEY]) return;
+
+      CACHED_CUSTOM_WORD_BANK = normalizeWordBank(changes[WORD_BANK_STORAGE_KEY].newValue);
+    });
+  } catch {
+    // ignore
+  }
+}
+
+refreshCustomWordBank();
+attachStorageListeners();
+
+function getActiveWordBank() {
+  if (Array.isArray(CACHED_CUSTOM_WORD_BANK) && CACHED_CUSTOM_WORD_BANK.length > 0) {
+    return CACHED_CUSTOM_WORD_BANK;
+  }
+  return getWordBank();
+}
+
+// ---- generator core ----
 
 function titleCase(word) {
   if (!word) return word;
@@ -17,15 +113,12 @@ function titleCase(word) {
 
 function maybeMutateWord(word, addCapitalization) {
   if (!addCapitalization) return word;
-  // 50/50 title-case; easy to tune later
-  return (secureRandomInt(0, 2) === 0) ? titleCase(word) : word;
+  return secureRandomInt(0, 2) === 0 ? titleCase(word) : word;
 }
 
 function injectDigits(pass, addDigits) {
   if (!addDigits) return pass;
-  const d = String(secureRandomInt(0, 10));
-  // append a single digit by default (tune later)
-  return pass + d;
+  return pass + String(secureRandomInt(0, 10));
 }
 
 function injectSymbol(pass, addSymbols) {
@@ -34,18 +127,18 @@ function injectSymbol(pass, addSymbols) {
   return pass + sym;
 }
 
-function replaceDigits(pass, numReplacements) { // function that replaces letters/numbers with numbers/symbols
+function replaceDigits(pass, numReplacements) {
   if (!numReplacements) return pass;
-  
+
   const chars = pass.split("");
   const indices = [];
 
   chars.forEach((c, i) => {
-    if (SYMBOL_DICTIONARY[c.toUpperCase()]) { indices.push(i); }}); // push uppercase characters to the array
-    
+    if (SYMBOL_DICTIONARY[c.toUpperCase()]) indices.push(i);
+  });
 
-  for (let i = indices.length - 1; i > 0; i--) { // randomize which letter to replace
-    const j = Math.floor(Math.random() * (i + 1));
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = secureRandomInt(0, i + 1);
     [indices[i], indices[j]] = [indices[j], indices[i]];
   }
 
@@ -58,7 +151,7 @@ function replaceDigits(pass, numReplacements) { // function that replaces letter
 }
 
 function buildPassphrase({ numWords, separator, addCapitalization }) {
-  const bank = getWordBank();
+  const bank = getActiveWordBank();
   const picks = [];
   for (let i = 0; i < numWords; i++) {
     const w = secureRandomChoice(bank);
@@ -87,30 +180,34 @@ export function generatePassword(cfg) {
   // #endregion
   const {
     mode,
-    targetLength = 18,
+    targetLength = 18, // ONLY used for random mode now
     numWords = 4,
     separator = "-",
     addCapitalization = true,
     addDigits = true,
     addSymbols = false,
-    numReplacements = false
+    numReplacements = false,
   } = cfg;
 
-  let pw;
-  if (mode === "random") {
-    pw = buildRandom({ targetLength, addSymbols });
-  } else {
-    pw = buildPassphrase({ numWords, separator, addCapitalization });
-    pw = injectDigits(pw, addDigits);
-    pw = injectSymbol(pw, addSymbols);
-    pw = replaceDigits(pw, numReplacements)
+  // Guardrails so 1–10 is allowed (your UI already restricts this)
+  const safeNumWords = Number.isFinite(numWords) ? Math.max(1, Math.min(10, numWords)) : 4;
 
-    // If user wants minimum length, pad with extra word(s) rather than random chars
-    while (pw.length < targetLength) {
-      pw += separator + secureRandomChoice(getWordBank());
-      if (addDigits) pw = injectDigits(pw, true);
-    }
+  if (mode === "random") {
+    // ✅ Random passwords respect targetLength
+    const safeLen = Number.isFinite(targetLength) ? Math.max(8, Math.min(128, targetLength)) : 18;
+    return buildRandom({ targetLength: safeLen, addSymbols });
   }
+
+  // ✅ Memorable passwords respect number of words (NOT character length)
+  let pw = buildPassphrase({
+    numWords: safeNumWords,
+    separator,
+    addCapitalization,
+  });
+
+  pw = injectDigits(pw, addDigits);
+  pw = injectSymbol(pw, addSymbols);
+  pw = replaceDigits(pw, numReplacements);
 
   return pw;
 }
