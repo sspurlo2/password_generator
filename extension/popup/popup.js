@@ -24,9 +24,9 @@ const toTest = $("toTest");
 const testBtn = $("testBtn");
 const results = $("results");
 
-// #region agent log
-fetch('http://127.0.0.1:7242/ingest/5859476a-1f0a-47c6-b1ed-24232e746d57',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:load',message:'Popup script loaded',data:{generateBtnExists:!!generateBtn,generatedExists:!!generated},timestamp:Date.now(),runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-// #endregion
+// // #region agent log
+// fetch('http://127.0.0.1:7242/ingest/5859476a-1f0a-47c6-b1ed-24232e746d57',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:load',message:'Popup script loaded',data:{generateBtnExists:!!generateBtn,generatedExists:!!generated},timestamp:Date.now(),runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+// // #endregion
 
 
 const color_theme_checkbox = document.querySelector('.switch .input');
@@ -144,13 +144,6 @@ async function renderResults(model) {
   const { scoreLabel, score, reasons, suggestions, leaked } = model;
 
   let leakedLine;
-  // if (leaked === false) {
-  //   leakedLine = `<div class="pw-leak ok"><b>Leak Check:</b> Password has not been leaked.</div>`;
-  // } else if (leaked !== null && leaked !== true) {
-  //   leakedLine = `<div class="pw-leak leaked"><b>Leak Check:</b> Password has been leaked ${leaked} times. Please re-generate.</div>`;
-  // } else {
-  //   leakedLine = `<div class="pw-leak"><b>Leak Check:</b> Unavailable or skipped.</div>`;
-  // }
   if (leaked === null) {
     leakedLine = `<div class="pw-leak ok"><b>Leak Check:</b> Password has not been leaked.</div>`;
   } else {

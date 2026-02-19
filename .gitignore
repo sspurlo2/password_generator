@@ -4,4 +4,4 @@ NOTWORKING_IGNORE/
 __pycache__/
 dist/
 .DS_Store
-./extension/.DS_Storeextension/src/crackstation-human-only.txt
+./extension/.DS_Store
