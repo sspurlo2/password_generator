@@ -1,17 +1,124 @@
-:root { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
-body { margin: 0; background: #0b0c10; color: #eaeaea; }
-.container { padding: 16px; max-width: 720px; }
+:root {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-size: 14px;
+}
+
+body {
+  margin: 0;
+  /* Options opens in a tab, so let it be responsive */
+  width: 100%;
+  background: #0b0c10;
+  color: #eaeaea;
+}
+
+.container {
+  padding: 16px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+h1 {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
 .card {
   background: #15171c;
   border: 1px solid #23262d;
   border-radius: 12px;
-  padding: 12px;
+  padding: 10px;
+  margin-bottom: 10px;
 }
-button {
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+input, select, textarea, button {
   border-radius: 10px;
   border: 1px solid #2b2f38;
   background: #0f1116;
   color: #eaeaea;
-  padding: 10px 12px;
+  padding: 8px;
+}
+
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+button {
   cursor: pointer;
 }
+
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.secondary {
+  opacity: 0.95;
+}
+
+.muted {
+  opacity: 0.9;
+  margin: 6px 0 10px;
+  line-height: 1.3;
+}
+
+.status {
+  margin-top: 10px;
+  opacity: 0.9;
+}
+
+.preview {
+  margin-top: 6px;
+  padding: 10px;
+  border: 1px solid #23262d;
+  border-radius: 10px;
+  background: #0f1116;
+  word-break: break-word;
+  min-height: 40px;
+}
+
+.inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.results {
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px dashed #2b2f38;
+  min-height: 44px;
+  background: #0f1116;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  opacity: 0.85;
+  font-size: 12px;
+}
+
+/* (kept for reuse in other pages) */
+.hidden { display: none !important; }
