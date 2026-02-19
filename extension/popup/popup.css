@@ -1,27 +1,60 @@
+/* @font-face {
+  font-family: "SNPro";
+  src: url("SNPro-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900; 
+  font-style: normal;
+} */
+
+/* default dark theme is defined in :root */
 :root {
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  font-size: 14px;
+  font-family: "SN Pro", system-ui, sans-serif;
+  font-optical-sizing: auto;
+
+  --text-color: #eaeaea;
+  --background-color: #0b0c10;
+  --card-background: #15171c;
+  --card-border: #23262d;
+  --input-background: #0f1116;
+  --input-border: #2b2f38;
+}
+
+/* light theme applied if the user toggles it */
+.light-theme {
+    --text-color: #181818;
+    --background-color: #cecece;
+    --card-background: #f1f1f2;
+    --card-border: #e1dfe3;
+    --input-background: #eae9eb;
+    --input-border: #e7e5e9;
 }
 
 body {
   margin: 0;
   width: 360px;
-  background: #0b0c10;
-  color: #eaeaea;
+  background: var(--background-color);
+  color: var(--text-color);
+  font-weight: 400;
 }
 
 .container {
   padding: 12px;
 }
 
-h1 {
+.header {
+  display: flex;
+  align-items: top;
+  justify-content: space-between;
+  padding: 6px;
+}
+
+.header h1 {
   margin: 0 0 10px;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .card {
-  background: #15171c;
-  border: 1px solid #23262d;
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
   padding: 10px;
   margin-bottom: 10px;
@@ -47,14 +80,28 @@ h2 {
 
 input, select, textarea, button {
   border-radius: 10px;
-  border: 1px solid #2b2f38;
-  background: #0f1116;
-  color: #eaeaea;
+  border: 1px solid var(--input-border);
+  background: var(--input-background);
+  color: var(--text-color);
   padding: 8px;
 }
 
-button {
+
+button, .button {
+  border-radius: 10px;
+  border: 1px solid var(--input-border);
+  background: var(--input-background);
+  color: var(--text-color);
+  padding: 8px;
   cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  font: inherit;
+}
+
+button:hover, .button:hover {
+  background: var(--input-border);
+  color: var(--text-color);
 }
 
 .actions {
@@ -72,9 +119,9 @@ button {
 .results {
   padding: 8px;
   border-radius: 10px;
-  border: 1px dashed #2b2f38;
+  border: 1px dashed var(--input-border);
   min-height: 44px;
-  background: #0f1116;
+  background: var(--input-background);
 }
 
 .footer {
@@ -84,6 +131,114 @@ button {
   font-size: 12px;
 }
 
-.hidden {
-display: none !important;
+.leak-count {
+  color: rgb(204, 6, 6);
+  font-weight: 600;
+}
+
+.very-strong { color: rgb(73, 179, 73); font-weight: 600; }
+.strong { color: rgb(146, 232, 146); font-weight: 600; }
+.okay { color: rgb(214, 193, 0); font-weight: 600; }
+.weak { color: rgb(232, 129, 39); font-weight: 600; }
+.very-weak { color: rgb(240, 65, 17); font-weight: 600; }
+.unacceptable { color: rgb(162, 0, 0); font-weight: 600; }
+
+.bs-scope {
+  all: initial;
+  font-family: inherit;
+}
+
+.bs-scope .btn {
+  all: unset;
+}
+
+/* From Uiverse.io by andrew-demchenk0 */ 
+.switch {
+  font-size: 12px;
+  position: relative;
+  display: inline-block;
+  width: 45px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #73C0FC;
+  transition: .4s;
+  border-radius: 21px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 21px;
+  width: 21px;
+  border-radius: 14px;
+  left: 1.5px;
+  bottom: 1.5px;
+  z-index: 2;
+  background-color: #e8e8e8;
+  transition: .4s;
+}
+
+.sun svg {
+  position: absolute;
+  top: 4px;
+  left: 25px;
+  z-index: 1;
+  width: 17px;
+  height: 17px;
+}
+
+.moon svg {
+  fill: #73C0FC;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  z-index: 1;
+  width: 17px;
+  height: 17px;
+}
+
+/* .switch:hover.sun svg {
+  animation: rotate 15s linear infinite;
+}
+
+@keyframes rotate {
+  0% { transform: rotate(0); }
+  100% { transform: rotate(360deg); }
+} */
+
+/* .switch:hover.moon svg {
+  animation: tilt 5s linear infinite;
+} */
+
+/* @keyframes tilt {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
+} */
+
+.input:checked + .slider {
+  background-color: #183153;
+}
+
+.input:focus + .slider {
+  box-shadow: 0 0 1px #183153;
+}
+
+.input:checked + .slider:before {
+  transform: translateX(21px);
 }

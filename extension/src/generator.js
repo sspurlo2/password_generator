@@ -175,6 +175,9 @@ function buildRandom({ targetLength, addSymbols }) {
 }
 
 export function generatePassword(cfg) {
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/5859476a-1f0a-47c6-b1ed-24232e746d57',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'generator.js:generatePassword',message:'generatePassword entered',data:{mode:cfg?.mode},timestamp:Date.now(),runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+  // #endregion
   const {
     mode,
     targetLength = 18, // ONLY used for random mode now
