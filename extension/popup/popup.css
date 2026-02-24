@@ -5,27 +5,27 @@
   font-style: normal;
 } */
 
-/* default dark theme is defined in :root */
+/* default dark purple theme is defined in :root */
 :root {
   font-family: "SN Pro", system-ui, sans-serif;
   font-optical-sizing: auto;
 
-  --text-color: #eaeaea;
-  --background-color: #0b0c10;
-  --card-background: #15171c;
-  --card-border: #23262d;
-  --input-background: #0f1116;
-  --input-border: #2b2f38;
+  --text-color: #eae6f0;
+  --background-color: #1a0a2e;
+  --card-background: #251440;
+  --card-border: #3d2460;
+  --input-background: #1e1029;
+  --input-border: #3d2a5c;
 }
 
-/* light theme applied if the user toggles it */
+/* light purple theme applied if the user toggles it */
 .light-theme {
-    --text-color: #181818;
-    --background-color: #cecece;
-    --card-background: #f1f1f2;
-    --card-border: #e1dfe3;
-    --input-background: #eae9eb;
-    --input-border: #e7e5e9;
+    --text-color: #2d1f4e;
+    --background-color: #e8dff5;
+    --card-background: #f3edfa;
+    --card-border: #d4c4e8;
+    --input-background: #efe6f7;
+    --input-border: #c9b5e0;
 }
 
 body {
@@ -174,7 +174,7 @@ button:hover, .button:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #73C0FC;
+  background-color: #9b6bcc;
   transition: .4s;
   border-radius: 21px;
 }
@@ -202,7 +202,7 @@ button:hover, .button:hover {
 }
 
 .moon svg {
-  fill: #73C0FC;
+  fill: #9b6bcc;
   position: absolute;
   top: 3px;
   left: 3px;
@@ -232,11 +232,11 @@ button:hover, .button:hover {
 } */
 
 .input:checked + .slider {
-  background-color: #183153;
+  background-color: #4a2c6a;
 }
 
 .input:focus + .slider {
-  box-shadow: 0 0 1px #183153;
+  box-shadow: 0 0 1px #4a2c6a;
 }
 
 .input:checked + .slider:before {

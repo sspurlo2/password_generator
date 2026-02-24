@@ -7,8 +7,8 @@ body {
   margin: 0;
   /* Options opens in a tab, so let it be responsive */
   width: 100%;
-  background: #0b0c10;
-  color: #eaeaea;
+  background: #1a0a2e;
+  color: #eae6f0;
 }
 
 .container {
@@ -23,8 +23,8 @@ h1 {
 }
 
 .card {
-  background: #15171c;
-  border: 1px solid #23262d;
+  background: #251440;
+  border: 1px solid #3d2460;
   border-radius: 12px;
   padding: 10px;
   margin-bottom: 10px;
@@ -50,9 +50,9 @@ h2 {
 
 input, select, textarea, button {
   border-radius: 10px;
-  border: 1px solid #2b2f38;
-  background: #0f1116;
-  color: #eaeaea;
+  border: 1px solid #3d2a5c;
+  background: #1e1029;
+  color: #eae6f0;
   padding: 8px;
 }
 
@@ -92,9 +92,9 @@ button {
 .preview {
   margin-top: 6px;
   padding: 10px;
-  border: 1px solid #23262d;
+  border: 1px solid #3d2460;
   border-radius: 10px;
-  background: #0f1116;
+  background: #1e1029;
   word-break: break-word;
   min-height: 40px;
 }
@@ -108,9 +108,9 @@ button {
 .results {
   padding: 8px;
   border-radius: 10px;
-  border: 1px dashed #2b2f38;
+  border: 1px dashed #3d2a5c;
   min-height: 44px;
-  background: #0f1116;
+  background: #1e1029;
 }
 
 .footer {
