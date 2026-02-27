@@ -3,3 +3,5 @@ docs/
 NOTWORKING_IGNORE/
 __pycache__/
 dist/
+.DS_Store
+./extension/.DS_Store

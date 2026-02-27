@@ -1,6 +1,7 @@
 // Lightweight strength assessment skeleton.
 // You can later swap in zxcvbn or your own model, but keep this interface stable.
 import { COMMON_PASSWORDS } from './common_passwords.js';
+import { leakedPasswordCheck } from './leakedCheck.js';
 function hasLower(s) { return /[a-z]/.test(s); }
 function hasUpper(s) { return /[A-Z]/.test(s); }
 function hasDigit(s) { return /[0-9]/.test(s); }
@@ -11,7 +12,7 @@ function countCharSets(pw) {
 }
 
 // A simple heuristic score (0–100). Not perfect, but good enough to start testing.
-function heuristicScore(pw) {
+export function heuristicScore(pw) {
   const len = pw.length;
   const sets = countCharSets(pw);
 
@@ -29,33 +30,47 @@ function heuristicScore(pw) {
   return Math.max(0, Math.round(score));
 }
 
-function label(score) {
-  if (score >= 85) return "Very strong";
-  if (score >= 70) return "Strong";
-  if (score >= 50) return "Okay";
-  if (score >= 30) return "Weak";
-  return "Very weak";
+export function label(score) {
+  if (score >= 85) return { text: "Very strong ★★★★★", className: "very-strong" };
+  if (score >= 70) return { text: "Strong ★★★★☆", className: "strong" };
+  if (score >= 50) return { text: "Okay ★★★☆☆", className: "okay" };
+  if (score >= 30) return { text: "Weak ★★☆☆☆", className: "weak" };
+  if (score >= 10) return { text: "Very weak ★☆☆☆☆", className: "very-weak" };
+  return { text: "Unacceptable ☆☆☆☆☆", className: "unacceptable" };
 }
 
-export function assessStrength(pw) {
+
+export async function assessStrength(pw) {
   const reasons = [];
   const suggestions = [];
-
   const len = pw.length;
   const sets = countCharSets(pw);
   const score = heuristicScore(pw);
-
-  // Check against known very common passwords
   const normalized = pw.trim().toLowerCase();
+
+  // Check both common and leaked lists
+  let isCommon = false;
+  let isLeaked = null;
+
   if (COMMON_PASSWORDS.has(normalized)) {
+    isCommon = true;
     reasons.push("Password appears in lists of extremely common passwords.");
     suggestions.push("Choose a password not on common-password lists; use a long passphrase or a password manager.");
+  }
+
+  isLeaked = await leakedPasswordCheck(pw);
+  if (typeof isLeaked === "number" && isLeaked > 0) {
+    reasons.push(`This password has been leaked <span class=\"leak-count\">${isLeaked}</span> times.`);
+    suggestions.push("Do not use this password anywhere. Choose a completely different password.");
+  }
+
+  if (isCommon || (typeof isLeaked === "number" && isLeaked > 0)) {
     return {
       score: 0,
-      scoreLabel: "Unacceptable",
+      scoreLabel: label(0),
       reasons,
       suggestions,
-      leaked: null,
+      leaked: isLeaked,
       unacceptable: true
     };
   }
@@ -90,11 +105,14 @@ export function assessStrength(pw) {
     suggestions.push("If a site rejects spaces, replace with '-' or another separator.");
   }
 
+  // Add positive indicator if password not found in leaked dataset
+  reasons.push("Password not found in leaked dataset.");
+
   return {
     score,
     scoreLabel: label(score),
     reasons,
     suggestions,
-    leaked: null // filled in optionally by leakedCheck.js
+    leaked: false
   };
 }

@@ -8,16 +8,47 @@
   </head>
   <body>
     <main class="container">
-      <h1>Options</h1>
+      <h1>Password Tool Options</h1>
 
       <section class="card">
-        <h2>Word Bank (coming soon)</h2>
-        <p>
-          In the next sprint, you can let users select a preset word bank
-          (e.g., “common words”, “tech words”, “nature words”) or upload their own.
+        <h2>Word Bank</h2>
+        <p class="muted">
+          Paste words separated by commas or new lines. This word bank is used for
+          <b>Passphrase (memorable)</b> mode in the popup.
         </p>
-        <button id="resetBtn">Reset (placeholder)</button>
+
+        <div class="row">
+          <label for="wordBankInput">Your custom word bank</label>
+          <textarea
+            id="wordBankInput"
+            rows="10"
+            placeholder="e.g.
+river
+cactus
+orbit
+laptop
+sunset
+(or comma-separated: river, cactus, orbit...)"
+          ></textarea>
+        </div>
+
+        <div class="actions">
+          <button id="saveBtn">Save Word Bank</button>
+          <button id="resetBtn" class="secondary">Reset to Default</button>
+          <button id="previewBtn" class="secondary">Preview Generate</button>
+        </div>
+
+        <div id="statusMsg" class="status" aria-live="polite"></div>
+
+        <div class="row">
+          <label>Preview</label>
+          <div id="previewOut" class="preview">Preview will appear here.</div>
+        </div>
       </section>
+
+      <footer class="footer">
+        <a href="../popup/popup.html" target="_blank" rel="noreferrer">Open Popup</a>
+      </footer>
     </main>
 
     <script type="module" src="options.js"></script>
