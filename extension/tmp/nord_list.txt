@@ -1,0 +1,50 @@
+window.consent = window.consent || {};
+Pricing
+NordPass
+Personal
+Family
+Teams
+IT Teams
+Business
+Enterprise
+Features
+Programs
+Affiliate
+Influencers
+Partners
+MSP
+For Universities
+For Nonprofits
+Resources
+Blog
+Passkeys
+Most Common Passwords
+Frequently forgotten passwords
+Whitepaper
+Case Study
+Business Onboarding Hub
+Free tools
+Username Generator
+Business Name Generator
+Password Generator
+Password Strength Checker
+Data Breach Scanner
+Password Sharer
+Company
+About Us
+Press Area
+Careers
+Help Center
+Contact Us
+Discover
+Nord Security
+NordVPN
+NordLayer
+NordLocker
+NordStellar
+Privacy Policy
+Privacy Policy (Business)
+Terms of Service
+Terms of Service (Business)
+Cookie Preferences
+DPA
