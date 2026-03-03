@@ -167,11 +167,30 @@ function buildRandom({ targetLength, addSymbols }) {
   const symbols = DEFAULT_SYMBOLS;
   const alphabet = lower + upper + digits + (addSymbols ? symbols : "");
 
-  let out = "";
-  for (let i = 0; i < targetLength; i++) {
-    out += alphabet[secureRandomInt(0, alphabet.length)];
+  const required = [
+    lower[secureRandomInt(0, lower.length)],
+    upper[secureRandomInt(0, upper.length)],
+    digits[secureRandomInt(0, digits.length)],
+  ];
+
+  if (addSymbols) {
+    required.push(symbols[secureRandomInt(0, symbols.length)]);
   }
-  return out;
+
+  const finalLen = Math.max(targetLength, required.length);
+  const chars = [...required];
+
+  for (let i = chars.length; i < finalLen; i++) {
+    chars.push(alphabet[secureRandomInt(0, alphabet.length)]);
+  }
+
+  // Fisher–Yates shuffle for uniform permutation
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = secureRandomInt(0, i + 1);
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+
+  return chars.join("");
 }
 
 export function generatePassword(cfg) {

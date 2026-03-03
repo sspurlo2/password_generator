@@ -46,6 +46,15 @@ function updateModeUI() {
   // - Random => hide number of words
   if (lengthRow) lengthRow.style.display = isPassphrase ? "none" : "";
   if (wordsRow) wordsRow.style.display = isPassphrase ? "" : "none";
+
+  // Make "Random (secure)" reliably score high by default:
+  // - include symbols (4 char sets)
+  // - use a length where the heuristic reaches the max length points
+  if (!isPassphrase) {
+    if (symbol && symbol.checked === false) symbol.checked = true;
+    const n = Number(length?.value);
+    if (Number.isFinite(n) && n > 0 && n < 20) length.value = "20";
+  }
 }
 
 
