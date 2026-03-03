@@ -198,7 +198,7 @@ export function generatePassword(cfg) {
     return buildRandom({ targetLength: safeLen, addSymbols });
   }
 
-  // ✅ Memorable passwords respect number of words (NOT character length)
+  // Memorable passwords respect number of words (NOT character length)
   let pw = buildPassphrase({
     numWords: safeNumWords,
     separator,
