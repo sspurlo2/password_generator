@@ -67,7 +67,7 @@ mode.addEventListener("change", updateModeUI);
 
 generateBtn.addEventListener("click", async () => {
   // #region agent log
-  fetch("http://127.0.0.1:7242/ingest/5859476a-1f0a-47c6-b1ed-24232e746d57", {
+  fetch("http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -75,9 +75,8 @@ generateBtn.addEventListener("click", async () => {
       message: "Generate button clicked",
       data: { symbolChecked: symbol.checked },
       timestamp: Date.now(),
-      sessionId: "debug-session",
       runId: "run1",
-      hypothesisId: "C",
+      hypothesisId: "H1",
     }),
   }).catch(() => {});
   // #endregion
@@ -94,7 +93,7 @@ generateBtn.addEventListener("click", async () => {
   };
   
   // #region agent log
-  fetch("http://127.0.0.1:7242/ingest/5859476a-1f0a-47c6-b1ed-24232e746d57", {
+  fetch("http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -102,14 +101,48 @@ generateBtn.addEventListener("click", async () => {
       message: "Config before generatePassword",
       data: { cfg },
       timestamp: Date.now(),
-      sessionId: "debug-session",
       runId: "run1",
-      hypothesisId: "C",
+      hypothesisId: "H2",
+    }),
+  }).catch(() => {});
+  // #endregion
+  // #region agent log
+  fetch("http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      location: "popup.js:BeforeGenerate",
+      message: "About to call generatePassword",
+      data: { mode: cfg.mode },
+      timestamp: Date.now(),
+      runId: "run1",
+      hypothesisId: "H3",
     }),
   }).catch(() => {});
   // #endregion
 
-  generated.value = generatePassword(cfg);
+  let generatedValue = "";
+  try {
+    generatedValue = generatePassword(cfg);
+  } catch (e) {
+    // #region agent log
+    fetch("http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        location: "popup.js:GenerateError",
+        message: "generatePassword threw",
+        data: { error: String(e && e.message || e) },
+        timestamp: Date.now(),
+        runId: "run1",
+        hypothesisId: "H4",
+      }),
+    }).catch(() => {});
+    // #endregion
+    generatedValue = "";
+  }
+
+  generated.value = generatedValue;
 
   // Show strength and leak check for the generated password
   if (generatedInfo && generated.value) {

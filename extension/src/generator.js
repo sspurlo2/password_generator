@@ -167,35 +167,16 @@ function buildRandom({ targetLength, addSymbols }) {
   const symbols = DEFAULT_SYMBOLS;
   const alphabet = lower + upper + digits + (addSymbols ? symbols : "");
 
-  const required = [
-    lower[secureRandomInt(0, lower.length)],
-    upper[secureRandomInt(0, upper.length)],
-    digits[secureRandomInt(0, digits.length)],
-  ];
-
-  if (addSymbols) {
-    required.push(symbols[secureRandomInt(0, symbols.length)]);
+  let out = "";
+  for (let i = 0; i < targetLength; i++) {
+    out += alphabet[secureRandomInt(0, alphabet.length)];
   }
-
-  const finalLen = Math.max(targetLength, required.length);
-  const chars = [...required];
-
-  for (let i = chars.length; i < finalLen; i++) {
-    chars.push(alphabet[secureRandomInt(0, alphabet.length)]);
-  }
-
-  // Fisher–Yates shuffle for uniform permutation
-  for (let i = chars.length - 1; i > 0; i--) {
-    const j = secureRandomInt(0, i + 1);
-    [chars[i], chars[j]] = [chars[j], chars[i]];
-  }
-
-  return chars.join("");
+  return out;
 }
 
 export function generatePassword(cfg) {
   // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/5859476a-1f0a-47c6-b1ed-24232e746d57',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'generator.js:generatePassword',message:'generatePassword entered',data:{mode:cfg?.mode},timestamp:Date.now(),runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+  fetch('http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'generator.js:generatePassword',message:'generatePassword entered',data:{mode:cfg?.mode,cfg},timestamp:Date.now(),runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
   // #endregion
   const {
     mode,
@@ -212,12 +193,19 @@ export function generatePassword(cfg) {
   const safeNumWords = Number.isFinite(numWords) ? Math.max(1, Math.min(10, numWords)) : 4;
 
   if (mode === "random") {
-    // ✅ Random passwords respect targetLength
+    // Random passwords respect targetLength
     const safeLen = Number.isFinite(targetLength) ? Math.max(8, Math.min(128, targetLength)) : 18;
-    return buildRandom({ targetLength: safeLen, addSymbols });
+
+    const out = buildRandom({ targetLength: safeLen, addSymbols });
+
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'generator.js:generatePassword',message:'random password generated',data:{len:out.length,preview:out.slice(0,4)},timestamp:Date.now(),runId:'run1',hypothesisId:'H2'})}).catch(()=>{});
+    // #endregion
+
+    return out;
   }
 
-  // ✅ Memorable passwords respect number of words (NOT character length)
+  // Memorable passwords respect number of words (NOT character length)
   let pw = buildPassphrase({
     numWords: safeNumWords,
     separator,
@@ -227,6 +215,10 @@ export function generatePassword(cfg) {
   pw = injectDigits(pw, addDigits);
   pw = injectSymbol(pw, addSymbols);
   pw = replaceDigits(pw, numReplacements);
+
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'generator.js:generatePassword',message:'passphrase password generated',data:{len:pw.length,numWords:safeNumWords},timestamp:Date.now(),runId:'run1',hypothesisId:'H3'})}).catch(()=>{});
+  // #endregion
 
   return pw;
 }

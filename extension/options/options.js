@@ -80,7 +80,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   saveBtn.addEventListener("click", async () => {
     const words = normalizeWordBankInput(wordBankInput.value);
-
     if (words.length < 5) {
       setStatus("Please enter at least 5 valid words before saving.");
       return;
