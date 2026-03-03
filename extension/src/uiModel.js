@@ -6,6 +6,28 @@
 //   : Object.values(diceware);
 
 let DEFAULT_WORD_BANK = null;
+const FALLBACK_WORD_BANK = [
+  "apple",
+  "river",
+  "sunset",
+  "coffee",
+  "mountain",
+  "forest",
+  "candle",
+  "orange",
+  "window",
+  "garden",
+  "pencil",
+  "planet",
+  "cloud",
+  "ocean",
+  "bridge",
+  "pillow",
+  "silver",
+  "winter",
+  "summer",
+  "shadow",
+];
 
 // ---- Custom word bank support ----
 export const WORD_BANK_STORAGE_KEY = "customWordBank";
@@ -89,9 +111,15 @@ fetch(getDictionaryUrl())
   .then((response) => response.json())
   .then((data) => {
     DEFAULT_WORD_BANK = data;
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'uiModel.js:dictionary',message:'Dictionary loaded',data:{size:Array.isArray(data)?data.length:null},timestamp:Date.now(),runId:'run1',hypothesisId:'H5'})}).catch(()=>{});
+    // #endregion
   })
   .catch((err) => {
     console.error("Failed to load dictionary:", err);
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'uiModel.js:dictionary',message:'Failed to load dictionary',data:{error:String(err && err.message || err)},timestamp:Date.now(),runId:'run1',hypothesisId:'H6'})}).catch(()=>{});
+    // #endregion
   });
 
 export function getWordBank() {
@@ -102,7 +130,12 @@ export function getWordBank() {
 
   // Otherwise use default dictionary
   if (!DEFAULT_WORD_BANK) {
-    throw new Error("Dictionary not loaded yet. Please try again.");
+    // If the main dictionary hasn't loaded yet, fall back to a small
+    // built-in word list so passphrase generation still works.
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'uiModel.js:getWordBank',message:'Dictionary not loaded when requested; using fallback',data:{fallbackSize:FALLBACK_WORD_BANK.length},timestamp:Date.now(),runId:'run1',hypothesisId:'H7'})}).catch(()=>{});
+    // #endregion
+    return FALLBACK_WORD_BANK;
   }
   return DEFAULT_WORD_BANK;
 }
