@@ -11,7 +11,7 @@ function countCharSets(pw) {
 }
 
 // A simple heuristic score (0–100). Not perfect, but good enough to start testing.
-function heuristicScore(pw) {
+export function heuristicScore(pw) {
   const len = pw.length;
   const sets = countCharSets(pw);
 
@@ -29,12 +29,14 @@ function heuristicScore(pw) {
   return Math.max(0, Math.round(score));
 }
 
-function label(score) {
-  if (score >= 85) return "Very strong";
-  if (score >= 70) return "Strong";
-  if (score >= 50) return "Okay";
-  if (score >= 30) return "Weak";
-  return "Very weak";
+// Return rich label info for UI / leakedCheck.js
+export function label(score) {
+  if (score >= 85) return { text: "Very strong ★★★★★", className: "very-strong" };
+  if (score >= 70) return { text: "Strong ★★★★☆", className: "strong" };
+  if (score >= 50) return { text: "Okay ★★★☆☆", className: "okay" };
+  if (score >= 30) return { text: "Weak ★★☆☆☆", className: "weak" };
+  if (score >= 10) return { text: "Very weak ★☆☆☆☆", className: "very-weak" };
+  return { text: "Unacceptable ☆☆☆☆☆", className: "unacceptable" };
 }
 
 export function assessStrength(pw) {
@@ -52,7 +54,7 @@ export function assessStrength(pw) {
     suggestions.push("Choose a password not on common-password lists; use a long passphrase or a password manager.");
     return {
       score: 0,
-      scoreLabel: "Unacceptable",
+      scoreLabel: label(0),
       reasons,
       suggestions,
       leaked: null,
