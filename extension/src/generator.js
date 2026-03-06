@@ -150,13 +150,56 @@ function replaceDigits(pass, numReplacements) {
   return chars.join("");
 }
 
-function buildPassphrase({ numWords, separator, addCapitalization }) {
-  const bank = getActiveWordBank();
-  const picks = [];
-  for (let i = 0; i < numWords; i++) {
-    const w = secureRandomChoice(bank);
-    picks.push(maybeMutateWord(w, addCapitalization));
+/**
+ * Deduplicate a word bank case-insensitively while preserving first-seen order.
+ * This protects against any duplicates in the default word bank too.
+ */
+function dedupeBankCaseInsensitive(bank) {
+  const out = [];
+  const seen = new Set();
+
+  for (const w of bank || []) {
+    const word = String(w ?? "").trim();
+    if (!word) continue;
+
+    const key = word.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    out.push(word);
   }
+
+  return out;
+}
+
+/**
+ * Crypto-safe Fisher–Yates shuffle using secureRandomInt.
+ */
+function shuffleInPlace(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = secureRandomInt(0, i + 1);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function buildPassphrase({ numWords, separator, addCapitalization }) {
+  // Enforce "no duplicates anywhere" by sampling without replacement
+  const bankRaw = getActiveWordBank();
+  const bank = dedupeBankCaseInsensitive(bankRaw);
+
+  if (bank.length < numWords) {
+    // Explicit error requested: word bank too small for requested word count
+    throw new Error(
+      `Word bank too small: need at least ${numWords} unique words, but only found ${bank.length}.`
+    );
+  }
+
+  // Select numWords unique items by shuffling a copy and taking the first N
+  const shuffled = shuffleInPlace([...bank]);
+  const chosen = shuffled.slice(0, numWords);
+
+  const picks = chosen.map((w) => maybeMutateWord(w, addCapitalization));
   return picks.join(separator);
 }
 
@@ -176,8 +219,20 @@ function buildRandom({ targetLength, addSymbols }) {
 
 export function generatePassword(cfg) {
   // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'generator.js:generatePassword',message:'generatePassword entered',data:{mode:cfg?.mode,cfg},timestamp:Date.now(),runId:'run1',hypothesisId:'H1'})}).catch(()=>{});
+  fetch("http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      location: "generator.js:generatePassword",
+      message: "generatePassword entered",
+      data: { mode: cfg?.mode, cfg },
+      timestamp: Date.now(),
+      runId: "run1",
+      hypothesisId: "H1",
+    }),
+  }).catch(() => {});
   // #endregion
+
   const {
     mode,
     targetLength = 18, // ONLY used for random mode now
@@ -199,7 +254,18 @@ export function generatePassword(cfg) {
     const out = buildRandom({ targetLength: safeLen, addSymbols });
 
     // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'generator.js:generatePassword',message:'random password generated',data:{len:out.length,preview:out.slice(0,4)},timestamp:Date.now(),runId:'run1',hypothesisId:'H2'})}).catch(()=>{});
+    fetch("http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        location: "generator.js:generatePassword",
+        message: "random password generated",
+        data: { len: out.length, preview: out.slice(0, 4) },
+        timestamp: Date.now(),
+        runId: "run1",
+        hypothesisId: "H2",
+      }),
+    }).catch(() => {});
     // #endregion
 
     return out;
@@ -217,7 +283,18 @@ export function generatePassword(cfg) {
   pw = replaceDigits(pw, numReplacements);
 
   // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'generator.js:generatePassword',message:'passphrase password generated',data:{len:pw.length,numWords:safeNumWords},timestamp:Date.now(),runId:'run1',hypothesisId:'H3'})}).catch(()=>{});
+  fetch("http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      location: "generator.js:generatePassword",
+      message: "passphrase password generated",
+      data: { len: pw.length, numWords: safeNumWords },
+      timestamp: Date.now(),
+      runId: "run1",
+      hypothesisId: "H3",
+    }),
+  }).catch(() => {});
   // #endregion
 
   return pw;
