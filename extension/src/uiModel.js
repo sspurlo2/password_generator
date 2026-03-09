@@ -89,9 +89,15 @@ fetch(getDictionaryUrl())
   .then((response) => response.json())
   .then((data) => {
     DEFAULT_WORD_BANK = data;
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'uiModel.js:dictionary',message:'Dictionary loaded',data:{size:Array.isArray(data)?data.length:null},timestamp:Date.now(),runId:'run1',hypothesisId:'H5'})}).catch(()=>{});
+    // #endregion
   })
   .catch((err) => {
     console.error("Failed to load dictionary:", err);
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'uiModel.js:dictionary',message:'Failed to load dictionary',data:{error:String(err && err.message || err)},timestamp:Date.now(),runId:'run1',hypothesisId:'H6'})}).catch(()=>{});
+    // #endregion
   });
 
 export function getWordBank() {
@@ -102,6 +108,9 @@ export function getWordBank() {
 
   // Otherwise use default dictionary
   if (!DEFAULT_WORD_BANK) {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'uiModel.js:getWordBank',message:'Dictionary not loaded when requested',data:{},timestamp:Date.now(),runId:'run1',hypothesisId:'H7'})}).catch(()=>{});
+    // #endregion
     throw new Error("Dictionary not loaded yet. Please try again.");
   }
   return DEFAULT_WORD_BANK;
