@@ -61,6 +61,17 @@ function updateModeUI() {
 // Ensure the generator sees the latest custom word bank as soon as popup opens
 refreshCustomWordBank().catch(() => {});
 
+// Helper to read mixed_bank preference from storage
+function storageGet(key) {
+  return new Promise((resolve) => {
+    if (typeof chrome !== "undefined" && chrome?.storage?.sync) {
+      chrome.storage.sync.get([key], (res) => resolve(res?.[key] ?? null));
+    } else {
+      resolve(null);
+    }
+  });
+}
+
 // Apply initial UI state + update on change
 updateModeUI();
 mode.addEventListener("change", updateModeUI);
@@ -90,6 +101,7 @@ generateBtn.addEventListener("click", async () => {
     addDigits: digit.checked,
     addSymbols: symbol.checked,
     numReplacements: embed.checked ? 2 : false,
+    mixed_bank: await storageGet("mixed_bank") ?? false,
   };
   
   // #region agent log

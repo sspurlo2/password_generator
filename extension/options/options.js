@@ -1,6 +1,7 @@
 import { generatePassword, refreshCustomWordBank } from "../src/generator.js";
 
 const STORAGE_KEY = "customWordBank";
+const MIXED_BANK_KEY = "mixed_bank";
 
 const $ = (id) => document.getElementById(id);
 
@@ -59,6 +60,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const resetBtn = $("resetBtn");
   const previewBtn = $("previewBtn");
   const previewOut = $("previewOut");
+  const mixed_bankCheck = $("mixed_bank");
 
   if (!wordBankInput || !saveBtn || !resetBtn || !previewBtn || !previewOut) {
     return;
@@ -78,6 +80,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     setStatus("No custom word bank saved yet. Using default dictionary until you save one.");
   }
 
+  // load mixed_bank preference and listen for changes
+  const mixedBank = await storageGet(MIXED_BANK_KEY);
+  if (mixed_bankCheck && mixedBank !== null) {
+    mixed_bankCheck.checked = mixedBank;
+  }
+
+  if (mixed_bankCheck) {
+    mixed_bankCheck.addEventListener("change", async () => {
+      await storageSet({ [MIXED_BANK_KEY]: mixed_bankCheck.checked });
+      setStatus(mixed_bankCheck.checked ? "Using both custom word bank and default dictionary." : "Using custom word bank only.");
+    });
+  }
+
   saveBtn.addEventListener("click", async () => {
     const words = normalizeWordBankInput(wordBankInput.value);
     if (words.length < 5) {
@@ -85,7 +100,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    await storageSet({ [STORAGE_KEY]: words });
+    await storageSet({ [STORAGE_KEY]: words, [MIXED_BANK_KEY]: mixed_bankCheck.checked });
 
     // IMPORTANT: refresh generator cache immediately so preview/popup see it right away
     await refreshCustomWordBank();
@@ -117,6 +132,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         addDigits: true,
         addSymbols: false,
         numReplacements: 2,
+        mixed_bank: mixed_bankCheck?.checked ?? false,
       });
 
       previewOut.textContent = pw;

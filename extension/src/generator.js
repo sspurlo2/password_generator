@@ -4,7 +4,7 @@
 //
 // Custom word bank is stored in chrome.storage.sync under key: "customWordBank"
 
-import { getWordBank, secureRandomInt, secureRandomChoice } from "./uiModel.js";
+import { getWordBank, getDefaultDictionary, secureRandomInt, secureRandomChoice } from "./uiModel.js";
 
 const DEFAULT_SYMBOLS = "!@#$%^&*()_+-=[]{};:,.?";
 const SYMBOL_DICTIONARY = {
@@ -97,11 +97,24 @@ function attachStorageListeners() {
 refreshCustomWordBank();
 attachStorageListeners();
 
-function getActiveWordBank() {
-  if (Array.isArray(CACHED_CUSTOM_WORD_BANK) && CACHED_CUSTOM_WORD_BANK.length > 0) {
-    return CACHED_CUSTOM_WORD_BANK;
+function getActiveWordBank(mixed_bank = false) {
+  const custom = Array.isArray(CACHED_CUSTOM_WORD_BANK) && CACHED_CUSTOM_WORD_BANK.length > 0 
+    ? CACHED_CUSTOM_WORD_BANK 
+    : null;
+  
+  if (!custom) {
+    return getWordBank(); // use dictionary only
   }
-  return getWordBank();
+  
+  if (!mixed_bank) {
+    return custom;  // use custom only
+  }
+  
+  try {
+    return dedupeBankCaseInsensitive([...custom, ...getDefaultDictionary()]); // combine custom and default
+  } catch {
+    return custom;
+  }
 }
 
 // ---- generator core ----
@@ -183,21 +196,43 @@ function shuffleInPlace(arr) {
   return arr;
 }
 
-function buildPassphrase({ numWords, separator, addCapitalization }) {
+function buildPassphrase({ numWords, separator, addCapitalization, mixed_bank = false }) {
   // Enforce "no duplicates anywhere" by sampling without replacement
-  const bankRaw = getActiveWordBank();
-  const bank = dedupeBankCaseInsensitive(bankRaw);
+  let chosen = [];
 
-  if (bank.length < numWords) {
-    // Explicit error requested: word bank too small for requested word count
-    throw new Error(
-      `Word bank too small: need at least ${numWords} unique words, but only found ${bank.length}.`
-    );
+  if (mixed_bank) { // setting for 50% word bank, 50% preset dictionary
+    const custom = Array.isArray(CACHED_CUSTOM_WORD_BANK) && CACHED_CUSTOM_WORD_BANK.length > 0 
+      ? CACHED_CUSTOM_WORD_BANK 
+      : null;
+    
+    // if no custom word bank, just use dictionary
+    if (!custom) {
+      const bankRaw = getActiveWordBank(false);
+      const bank = dedupeBankCaseInsensitive(bankRaw);
+      const shuffled = shuffleInPlace([...bank]);
+      chosen = shuffled.slice(0, numWords);
+    
+    } else {
+      let dict = null;
+      dict = getDefaultDictionary();
+
+      const customCount = Math.ceil(numWords / 2); // 50% calculation
+      const dictCount = numWords - customCount;
+      
+      const customDedup = dedupeBankCaseInsensitive(custom);
+      const dictDedup = dedupeBankCaseInsensitive(dict);
+      
+      const customPicks = shuffleInPlace([...customDedup]).slice(0, customCount);
+      const dictPicks = shuffleInPlace([...dictDedup]).slice(0, dictCount);
+      chosen = shuffleInPlace([...customPicks, ...dictPicks]);
+    }
+  
+  } else {
+    const bankRaw = getActiveWordBank(false);
+    const bank = dedupeBankCaseInsensitive(bankRaw);
+    const shuffled = shuffleInPlace([...bank]);
+    chosen = shuffled.slice(0, numWords);
   }
-
-  // Select numWords unique items by shuffling a copy and taking the first N
-  const shuffled = shuffleInPlace([...bank]);
-  const chosen = shuffled.slice(0, numWords);
 
   const picks = chosen.map((w) => maybeMutateWord(w, addCapitalization));
   return picks.join(separator);
@@ -242,6 +277,7 @@ export function generatePassword(cfg) {
     addDigits = true,
     addSymbols = false,
     numReplacements = false,
+    mixed_bank = false,
   } = cfg;
 
   // Guardrails so 1–10 is allowed (your UI already restricts this)
@@ -276,6 +312,7 @@ export function generatePassword(cfg) {
     numWords: safeNumWords,
     separator,
     addCapitalization,
+    mixed_bank,
   });
 
   pw = injectDigits(pw, addDigits);
