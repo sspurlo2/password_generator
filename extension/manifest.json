@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "default_locale": "en",
   "icons": {
-    "128": "/icons/icon128.png"
+    "128": "/icons/icon_128.png"
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;"
@@ -18,11 +18,5 @@
   "background": {
     "service_worker": "src/background.js",
     "type": "module"
-  },
-  "web_accessible_resources": [
-    {
-      "resources": ["SNPro-VariableFont_wght.ttf"],
-      "matches": ["<all_urls>"]
-    }
-  ]
+  }
 }

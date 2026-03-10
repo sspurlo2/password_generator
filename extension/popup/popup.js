@@ -192,6 +192,7 @@ testBtn.addEventListener("click", async () => {
 
   try {
     const model = await assessStrength(pw);
+    model.leaked = await leakedPasswordCheck(pw);
     renderResults(model);
   } catch (e) {
     console.error("Test failed:", e);
@@ -209,6 +210,11 @@ async function renderResults(model) {
   } else {
     leakedLine = `<div class="pw-leak leaked"><b>Leak Check:</b> Password appears on leaked lists!</div>`;
   }
+
+  const whyItems = Array.isArray(reasons) ? [...reasons] : [];
+  if (leaked !== null) {
+    whyItems.push(`<div>Password has been leaked <span class="leak-count">${leaked}</span> times.</div>`);
+  }
   // scoreLabel is now an object: { text, className }
   const labelText = scoreLabel?.text || scoreLabel;
   const labelClass = scoreLabel?.className || "";
@@ -216,7 +222,7 @@ async function renderResults(model) {
   results.innerHTML = `
     <div><b>Strength:</b> ${score}/100, <span class="pw-label ${labelClass}">${labelText}</span></div>
     ${leakedLine}
-    ${reasons?.length ? `<div style="margin-top:6px;"><b>Why:</b><ul>${reasons.map(r => `<li>${r}</li>`).join("")}</ul></div>` : ""}
+    ${whyItems.length ? `<div style="margin-top:6px;"><b>Why:</b><ul>${whyItems.map(r => `<li>${r}</li>`).join("")}</ul></div>` : ""}
     ${suggestions?.length ? `<div style="margin-top:6px;"><b>Improve:</b><ul>${suggestions.map(s => `<li>${s}</li>`).join("")}</ul></div>` : ""}
   `;
 }
