@@ -1,9 +1,4 @@
 // Central place for word bank + crypto-safe randomness.
-// import { english as diceware } from "eff-diceware-passphrase";
-
-// const DEFAULT_WORD_BANK = Array.isArray(diceware) // normalize the array
-//   ? diceware
-//   : Object.values(diceware);
 
 let DEFAULT_WORD_BANK = null;
 
@@ -113,6 +108,10 @@ export function getWordBank() {
     // #endregion
     throw new Error("Dictionary not loaded yet. Please try again.");
   }
+  return DEFAULT_WORD_BANK;
+}
+
+export function getDefaultDictionary() {
   return DEFAULT_WORD_BANK;
 }
 

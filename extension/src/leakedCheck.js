@@ -1,27 +1,6 @@
-/* Kate Spencer
-Based on the Pwned API https://haveibeenpwned.com/api/v3 */
+/* Based on the Pwned API https://haveibeenpwned.com/api/v3 */
 
 import { heuristicScore, label} from './strength.js';
-
-// DEPRECATED -> KEEP FOR NOW
-
-// let crackedPasswords = null;
-// async function loadCrackedPasswords() { 
-//   if (crackedPasswords) return crackedPasswords;
-
-//   try {
-//     const path_to_file = "src/test.txt";
-//     const resolved_URL = chrome.runtime.getURL(path_to_file);
-//     const response = await fetch(resolved_URL);
-//     const text = await response.text();
-//     crackedPasswords = text.split('\n').map(pw => pw.trim()).filter(pw => pw.length > 0); // trim by line
-//     return crackedPasswords;
-  
-//   } catch (error) { // error shows up even though it does fetch
-//     console.error('Failed to load cracked passwords:', error);
-//     return [];
-//   }
-// }
 
 async function SHA1_hash(password) {
   const encoded_password = new TextEncoder().encode(password);

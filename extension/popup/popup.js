@@ -30,10 +30,16 @@ const results = $("results");
 
 
 const color_theme_checkbox = document.querySelector('.switch .input');
-if (color_theme_checkbox) {
+if (color_theme_checkbox) {   // load saved theme preference, default is dark
+  const isLight = localStorage.getItem('theme') === 'light';
+  if (isLight) {
+    document.documentElement.classList.add('light-theme');
+  }
+  color_theme_checkbox.checked = !isLight; // switch is inverted
+  
   color_theme_checkbox.addEventListener('change', () => {
     document.documentElement.classList.toggle('light-theme');
-    // Optionally, save the user preference to local storage
+    localStorage.setItem('theme', document.documentElement.classList.contains('light-theme') ? 'light' : 'dark');
   });
 }
 
@@ -60,6 +66,17 @@ function updateModeUI() {
 
 // Ensure the generator sees the latest custom word bank as soon as popup opens
 refreshCustomWordBank().catch(() => {});
+
+// Helper to read mixed_bank preference from storage
+function storageGet(key) {
+  return new Promise((resolve) => {
+    if (typeof chrome !== "undefined" && chrome?.storage?.sync) {
+      chrome.storage.sync.get([key], (res) => resolve(res?.[key] ?? null));
+    } else {
+      resolve(null);
+    }
+  });
+}
 
 // Apply initial UI state + update on change
 updateModeUI();
@@ -90,6 +107,7 @@ generateBtn.addEventListener("click", async () => {
     addDigits: digit.checked,
     addSymbols: symbol.checked,
     numReplacements: embed.checked ? 2 : false,
+    mixed_bank: await storageGet("mixed_bank") ?? false,
   };
   
   // #region agent log
@@ -174,6 +192,7 @@ testBtn.addEventListener("click", async () => {
 
   try {
     const model = await assessStrength(pw);
+    model.leaked = await leakedPasswordCheck(pw);
     renderResults(model);
   } catch (e) {
     console.error("Test failed:", e);
@@ -191,6 +210,11 @@ async function renderResults(model) {
   } else {
     leakedLine = `<div class="pw-leak leaked"><b>Leak Check:</b> Password appears on leaked lists!</div>`;
   }
+
+  const whyItems = Array.isArray(reasons) ? [...reasons] : [];
+  if (leaked !== null) {
+    whyItems.push(`<div>Password has been leaked <span class="leak-count">${leaked}</span> times.</div>`);
+  }
   // scoreLabel is now an object: { text, className }
   const labelText = scoreLabel?.text || scoreLabel;
   const labelClass = scoreLabel?.className || "";
@@ -198,7 +222,7 @@ async function renderResults(model) {
   results.innerHTML = `
     <div><b>Strength:</b> ${score}/100, <span class="pw-label ${labelClass}">${labelText}</span></div>
     ${leakedLine}
-    ${reasons?.length ? `<div style="margin-top:6px;"><b>Why:</b><ul>${reasons.map(r => `<li>${r}</li>`).join("")}</ul></div>` : ""}
+    ${whyItems.length ? `<div style="margin-top:6px;"><b>Why:</b><ul>${whyItems.map(r => `<li>${r}</li>`).join("")}</ul></div>` : ""}
     ${suggestions?.length ? `<div style="margin-top:6px;"><b>Improve:</b><ul>${suggestions.map(s => `<li>${s}</li>`).join("")}</ul></div>` : ""}
   `;
 }

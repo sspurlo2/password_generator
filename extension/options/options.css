@@ -1,14 +1,41 @@
+/* :root {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-size: 14px;
+} */
+
 :root {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   font-size: 14px;
+
+  --text-color: #eae6f0;
+  --background-color: #1a0a2e;
+  --card-background: #251440;
+  --card-border: #3d2460;
+  --input-background: #1e1029;
+  --input-border: #3d2a5c;
+}
+
+/* light purple theme applied if the user toggles it */
+.light-theme {
+    --text-color: #2d1f4e;
+    --background-color: #e8dff5;
+    --card-background: #f3edfa;
+    --card-border: #d4c4e8;
+    --input-background: #efe6f7;
+    --input-border: #c9b5e0;
 }
 
 body {
   margin: 0;
-  /* Options opens in a tab, so let it be responsive */
   width: 100%;
-  background: #1a0a2e;
-  color: #eae6f0;
+  background: var(--background-color);
+  color: var(--text-color);
+}
+.header {
+  display: flex;
+  align-items: top;
+  justify-content: space-between;
+  padding: 6px;
 }
 
 .container {
@@ -23,8 +50,8 @@ h1 {
 }
 
 .card {
-  background: #251440;
-  border: 1px solid #3d2460;
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
   padding: 10px;
   margin-bottom: 10px;
@@ -50,9 +77,9 @@ h2 {
 
 input, select, textarea, button {
   border-radius: 10px;
-  border: 1px solid #3d2a5c;
-  background: #1e1029;
-  color: #eae6f0;
+  border: 1px solid var(--input-border);
+  background: var(--input-background);
+  color: var(--text-color);
   padding: 8px;
 }
 
@@ -92,9 +119,9 @@ button {
 .preview {
   margin-top: 6px;
   padding: 10px;
-  border: 1px solid #3d2460;
+  border: 1px solid var(--card-border);
   border-radius: 10px;
-  background: #1e1029;
+  background: var(--input-background);
   word-break: break-word;
   min-height: 40px;
 }
@@ -108,9 +135,9 @@ button {
 .results {
   padding: 8px;
   border-radius: 10px;
-  border: 1px dashed #3d2a5c;
+  border: 1px dashed var(--input-border);
   min-height: 44px;
-  background: #1e1029;
+  background: var(--input-background);
 }
 
 .footer {
@@ -118,6 +145,77 @@ button {
   justify-content: space-between;
   opacity: 0.85;
   font-size: 12px;
+}
+
+/* From Uiverse.io by andrew-demchenk0 */ 
+.switch {
+  font-size: 12px;
+  position: relative;
+  display: inline-block;
+  width: 45px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #9b6bcc;
+  transition: .4s;
+  border-radius: 21px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 21px;
+  width: 21px;
+  border-radius: 14px;
+  left: 1.5px;
+  bottom: 1.5px;
+  z-index: 2;
+  background-color: #e8e8e8;
+  transition: .4s;
+}
+
+.sun svg {
+  position: absolute;
+  top: 4px;
+  left: 25px;
+  z-index: 1;
+  width: 17px;
+  height: 17px;
+}
+
+.moon svg {
+  fill: #9b6bcc;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  z-index: 1;
+  width: 17px;
+  height: 17px;
+}
+
+.input:checked + .slider {
+  background-color: #4a2c6a;
+}
+
+.input:focus + .slider {
+  box-shadow: 0 0 1px #4a2c6a;
+}
+
+.input:checked + .slider:before {
+  transform: translateX(21px);
 }
 
 /* (kept for reuse in other pages) */
