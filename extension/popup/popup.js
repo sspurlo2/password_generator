@@ -30,10 +30,16 @@ const results = $("results");
 
 
 const color_theme_checkbox = document.querySelector('.switch .input');
-if (color_theme_checkbox) {
+if (color_theme_checkbox) {   // load saved theme preference, default is dark
+  const isLight = localStorage.getItem('theme') === 'light';
+  if (isLight) {
+    document.documentElement.classList.add('light-theme');
+  }
+  color_theme_checkbox.checked = !isLight; // switch is inverted
+  
   color_theme_checkbox.addEventListener('change', () => {
     document.documentElement.classList.toggle('light-theme');
-    // Optionally, save the user preference to local storage
+    localStorage.setItem('theme', document.documentElement.classList.contains('light-theme') ? 'light' : 'dark');
   });
 }
 

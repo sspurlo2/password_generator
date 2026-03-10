@@ -55,6 +55,20 @@ async function storageRemove(key) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  // Apply and sync theme preference
+  const theme_checkbox = document.querySelector('.switch .input');
+  const isLight = localStorage.getItem('theme') === 'light';
+  if (isLight) {
+    document.documentElement.classList.add('light-theme');
+  }
+  if (theme_checkbox) {
+    theme_checkbox.checked = !isLight;  // Inverted because CSS shows opposite icon
+    theme_checkbox.addEventListener('change', () => {
+      document.documentElement.classList.toggle('light-theme');
+      localStorage.setItem('theme', document.documentElement.classList.contains('light-theme') ? 'light' : 'dark');
+    });
+  }
+
   const wordBankInput = $("wordBankInput");
   const saveBtn = $("saveBtn");
   const resetBtn = $("resetBtn");
