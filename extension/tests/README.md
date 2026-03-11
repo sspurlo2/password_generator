@@ -2,12 +2,4 @@
 
 This directory is for test files for the password generator/analyzer extension.
 
-## Test Structure
-
-- Unit tests for core functionality (generator, strength assessment, etc.)
-- Integration tests for extension features
-- End-to-end tests for user workflows
-
-## Running Tests
-
-Add your test framework configuration here (e.g., Jest, Mocha, etc.)
+There are two test files, passphrase_generation_test.js, and random_generation_test.js. These files generate 100 passowords and their scores based on set parameters within the test. From this, we can analyze mean/median score results based on different variables.

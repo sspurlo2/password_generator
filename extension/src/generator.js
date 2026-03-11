@@ -270,7 +270,7 @@ export function generatePassword(cfg) {
 
   const {
     mode,
-    targetLength = 18, // ONLY used for random mode now
+    targetLength = 18, // ONLY used for random mode
     numWords = 4,
     separator = "-",
     addCapitalization = true,
