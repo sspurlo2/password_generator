@@ -1,5 +1,6 @@
 // Set of 200 most common passwords of 2025 from Nordpass. 
 // source: https://nordpass.com/most-common-passwords-list/
+
 export const COMMON_PASSWORDS = new Set(['123456', 'admin', '12345678', '123456789', '12345', 'password', 'Aa123456', '1234567890', 'Pass@123',
   'admin123', '1234567', '123123', '111111', '12345678910', 'P@ssw0rd', 'Password', 'Aa@123456', 'admintelecom',
   'Admin@123', '112233','102030', '654321', 'abcd1234', 'abc123', 'qwerty123', 'Abcd@1234', 'Pass@1234',

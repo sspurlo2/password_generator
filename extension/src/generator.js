@@ -1,12 +1,10 @@
-// Generator supports:
-// - passphrase mode: word-bank + separator + optional transformations
-// - random mode: strong random characters
-//
-// Custom word bank is stored in chrome.storage.sync under key: "customWordBank"
+// This generator supports: passphrase mode (word-bank + separator + optional transformations)
+// and random mode (strong random characters). 
+// custom word bank is stored in chrome.storage.sync under key: "customWordBank"
 
 import { getWordBank, getDefaultDictionary, secureRandomInt, secureRandomChoice } from "./uiModel.js";
 
-const DEFAULT_SYMBOLS = "!@#$%^&*()_+-=[]{};:,.?";
+const DEFAULT_SYMBOLS = "!@#$%^&*()_+-=[]{};:?";
 const SYMBOL_DICTIONARY = {
   O: "0",
   I: "1",
@@ -19,7 +17,7 @@ const SYMBOL_DICTIONARY = {
   Z: "2",
 };
 
-// ---- Custom word bank support (from Options page) ----
+// custom word bank support (for Options page)
 export const WORD_BANK_STORAGE_KEY = "customWordBank";
 let CACHED_CUSTOM_WORD_BANK = null;
 
@@ -59,10 +57,7 @@ function normalizeWordBank(raw) {
   return cleaned.length >= 5 ? cleaned : null;
 }
 
-/**
- * Force-refresh the cached custom word bank from chrome.storage.sync.
- * Call this after Save/Reset so popup/preview uses the newest word bank immediately.
- */
+// Force-refresh the cached custom word bank from chrome.storage.sync.
 export async function refreshCustomWordBank() {
   if (!hasChromeStorage()) return null;
 
@@ -163,10 +158,8 @@ function replaceDigits(pass, numReplacements) {
   return chars.join("");
 }
 
-/**
- * Deduplicate a word bank case-insensitively while preserving first-seen order.
- * This protects against any duplicates in the default word bank too.
- */
+
+// Deduplicate a word bank case-insensitively while preserving first-seen order.
 function dedupeBankCaseInsensitive(bank) {
   const out = [];
   const seen = new Set();
@@ -185,9 +178,8 @@ function dedupeBankCaseInsensitive(bank) {
   return out;
 }
 
-/**
- * Crypto-safe Fisher–Yates shuffle using secureRandomInt.
- */
+// Crypto-safe Fisher–Yates shuffle using secureRandomInt.
+
 function shuffleInPlace(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = secureRandomInt(0, i + 1);
@@ -280,11 +272,10 @@ export function generatePassword(cfg) {
     mixed_bank = false,
   } = cfg;
 
-  // Guardrails so 1–10 is allowed (your UI already restricts this)
-  const safeNumWords = Number.isFinite(numWords) ? Math.max(1, Math.min(10, numWords)) : 4;
+  const safeNumWords = Number.isFinite(numWords) ? Math.max(1, Math.min(10, numWords)) : 4; // 1 - 10 guardrails
 
   if (mode === "random") {
-    // Random passwords respect targetLength
+    // random passwords respect targetLength
     const safeLen = Number.isFinite(targetLength) ? Math.max(8, Math.min(128, targetLength)) : 18;
 
     const out = buildRandom({ targetLength: safeLen, addSymbols });
@@ -307,7 +298,7 @@ export function generatePassword(cfg) {
     return out;
   }
 
-  // Memorable passwords respect number of words (NOT character length)
+  // memorable passwords respect number of words
   let pw = buildPassphrase({
     numWords: safeNumWords,
     separator,

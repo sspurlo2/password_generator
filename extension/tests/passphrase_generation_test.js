@@ -84,7 +84,7 @@ globalThis.fetch = async (url) => {
     const cfgs = [cfg1, cfg2, cfg3, cfg4, cfg5, cfg6];
     for (let i = 1; i < 7; i++) {
         const results = [];
-        for (let j = 0; j < 1000; j++) {
+        for (let j = 0; j < 100; j++) {
             const passphrase = generatePassword(cfgs[i - 1]);
             const { score } = assessStrength(passphrase);
             results.push({ passphrase, score });

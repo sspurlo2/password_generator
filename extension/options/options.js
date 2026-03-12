@@ -55,14 +55,13 @@ async function storageRemove(key) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // Apply and sync theme preference
-  const theme_checkbox = document.querySelector('.switch .input');
+  const theme_checkbox = document.querySelector('.switch .input'); // for syncing theme
   const isLight = localStorage.getItem('theme') === 'light';
   if (isLight) {
     document.documentElement.classList.add('light-theme');
   }
   if (theme_checkbox) {
-    theme_checkbox.checked = !isLight;  // Inverted because CSS shows opposite icon
+    theme_checkbox.checked = !isLight;  // button is inverted; invert the button
     theme_checkbox.addEventListener('change', () => {
       document.documentElement.classList.toggle('light-theme');
       localStorage.setItem('theme', document.documentElement.classList.contains('light-theme') ? 'light' : 'dark');
@@ -85,7 +84,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  // Load saved bank into textarea
+  // load saved bank into textarea
   const saved = await storageGet(STORAGE_KEY);
   if (Array.isArray(saved) && saved.length) {
     wordBankInput.value = saved.join("\n");
@@ -115,8 +114,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     await storageSet({ [STORAGE_KEY]: words, [MIXED_BANK_KEY]: mixed_bankCheck.checked });
-
-    // IMPORTANT: refresh generator cache immediately so preview/popup see it right away
     await refreshCustomWordBank();
 
     setStatus(`Saved ${words.length} words to your custom word bank.`);
@@ -126,16 +123,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     await storageRemove(STORAGE_KEY);
     wordBankInput.value = "";
 
-    // Refresh cache immediately
-    await refreshCustomWordBank();
+    await refreshCustomWordBank(); // immedietly reset cache
 
-    setStatus("Reset complete. Generator will use the default dictionary word bank.");
+    setStatus("Reset complete. Generator will use the default dictionary.");
   });
 
   previewBtn.addEventListener("click", async () => {
     try {
-      // Ensure cache is current (especially right after Save/Reset)
-      await refreshCustomWordBank();
+      await refreshCustomWordBank();   // ensure cache is current (especially right after Save/Reset)
 
       const pw = generatePassword({
         mode: "passphrase",

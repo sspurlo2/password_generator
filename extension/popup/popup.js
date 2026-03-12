@@ -24,10 +24,6 @@ const toTest = $("toTest");
 const testBtn = $("testBtn");
 const results = $("results");
 
-// // #region agent log
-// fetch('http://127.0.0.1:7242/ingest/5859476a-1f0a-47c6-b1ed-24232e746d57',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:load',message:'Popup script loaded',data:{generateBtnExists:!!generateBtn,generatedExists:!!generated},timestamp:Date.now(),runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-// // #endregion
-
 
 const color_theme_checkbox = document.querySelector('.switch .input');
 if (color_theme_checkbox) {   // load saved theme preference, default is dark
@@ -47,15 +43,10 @@ if (color_theme_checkbox) {   // load saved theme preference, default is dark
 function updateModeUI() {
   const isPassphrase = mode.value === "passphrase";
 
-  // Requirement:
-  // - Passphrase => hide target length
-  // - Random => hide number of words
-  if (lengthRow) lengthRow.style.display = isPassphrase ? "none" : "";
-  if (wordsRow) wordsRow.style.display = isPassphrase ? "" : "none";
+  if (lengthRow) lengthRow.style.display = isPassphrase ? "none" : ""; // for random password only
+  if (wordsRow) wordsRow.style.display = isPassphrase ? "" : "none"; // for random passphrase only
 
-  // Make "Random (secure)" reliably score high by default:
-  // - include symbols (4 char sets)
-  // - use a length where the heuristic reaches the max length points
+  // want random to score high by default
   if (!isPassphrase) {
     if (symbol && symbol.checked === false) symbol.checked = true;
     const n = Number(length?.value);
@@ -64,10 +55,10 @@ function updateModeUI() {
 }
 
 
-// Ensure the generator sees the latest custom word bank as soon as popup opens
+// ensure the generator sees the latest custom word bank as soon as popup opens
 refreshCustomWordBank().catch(() => {});
 
-// Helper to read mixed_bank preference from storage
+// helper to read mixed_bank preference from storage
 function storageGet(key) {
   return new Promise((resolve) => {
     if (typeof chrome !== "undefined" && chrome?.storage?.sync) {
@@ -78,7 +69,7 @@ function storageGet(key) {
   });
 }
 
-// Apply initial UI state + update on change
+// apply initial UI state + update on change
 updateModeUI();
 mode.addEventListener("change", updateModeUI);
 
@@ -162,7 +153,7 @@ generateBtn.addEventListener("click", async () => {
 
   generated.value = generatedValue;
 
-  // Show strength and leak check for the generated password
+  // show strength and leak check for the generated password
   if (generatedInfo && generated.value) {
     try {
       const { scoreHTML, leakedHTML } = await check_generated_password(generated.value);
@@ -222,7 +213,7 @@ async function renderResults(model) {
   results.innerHTML = `
     <div><b>Strength:</b> ${score}/100, <span class="pw-label ${labelClass}">${labelText}</span></div>
     ${leakedLine}
-    ${whyItems.length ? `<div style="margin-top:6px;"><b>Why:</b><ul>${whyItems.map(r => `<li>${r}</li>`).join("")}</ul></div>` : ""}
-    ${suggestions?.length ? `<div style="margin-top:6px;"><b>Improve:</b><ul>${suggestions.map(s => `<li>${s}</li>`).join("")}</ul></div>` : ""}
+    ${whyItems.length ? `<div class="result-section"><b>Why:</b><ul>${whyItems.map(r => `<li>${r}</li>`).join("")}</ul></div>` : ""}
+    ${suggestions?.length ? `<div class="result-section"><b>Improve:</b><ul>${suggestions.map(s => `<li>${s}</li>`).join("")}</ul></div>` : ""}
   `;
 }

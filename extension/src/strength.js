@@ -1,6 +1,5 @@
-// Lightweight strength assessment skeleton.
-// You can later swap in zxcvbn or your own model, but keep this interface stable.
 import { COMMON_PASSWORDS } from './common_passwords.js';
+
 function hasLower(s) { return /[a-z]/.test(s); }
 function hasUpper(s) { return /[A-Z]/.test(s); }
 function hasDigit(s) { return /[0-9]/.test(s); }
@@ -10,17 +9,17 @@ function countCharSets(pw) {
   return [hasLower(pw), hasUpper(pw), hasDigit(pw), hasSymbol(pw)].filter(Boolean).length;
 }
 
-// A simple heuristic score (0–100). Not perfect, but good enough to start testing.
+// a simple heuristic score (0–100)
 export function heuristicScore(pw) {
   const len = pw.length;
   const sets = countCharSets(pw);
 
-  // length contributes heavily
+  // length score
   let score = Math.min(60, len * 3);           // 20 chars -> 60
   score += sets * 10;                           // up to +40
   score = Math.min(100, score);
 
-  // penalties for common bad patterns
+  // penalties
   if (/^(.)\1+$/.test(pw)) score = Math.min(score, 10);        // all same char
   if (/password|qwerty|letmein|admin/i.test(pw)) score = Math.min(score, 20);
   if (/^[A-Za-z]+$/.test(pw)) score -= 10;                     // letters only
@@ -29,7 +28,6 @@ export function heuristicScore(pw) {
   return Math.max(0, Math.round(score));
 }
 
-// Return rich label info for UI / leakedCheck.js
 export function label(score) {
   if (score >= 85) return { text: "Very strong ★★★★★", className: "very-strong" };
   if (score >= 70) return { text: "Strong ★★★★☆", className: "strong" };
@@ -47,7 +45,7 @@ export function assessStrength(pw) {
   const sets = countCharSets(pw);
   const score = heuristicScore(pw);
 
-  // Check against known very common passwords
+  // check against known very common passwords
   const normalized = pw.trim().toLowerCase();
   if (COMMON_PASSWORDS.has(normalized)) {
     reasons.push("Password appears in lists of extremely common passwords.");

@@ -20,3 +20,38 @@ Group: Lily Spurgat, Sam Spurlock, Kate Spencer
 - Add real word bank selection + custom word lists (Options → storage)
 - Implement leaked-password checking (hashed lookups or local dataset)
 - Improve scoring model + explanations (usability-first output)
+
+## Root Structure
+
+```
+extension/
+├── _locales/           
+│   └── en/             
+│       └── messages.json
+├── content_scripts/    
+│   └── README.md
+├── icons/              
+│   └── icon_128.png    
+├── options/           
+│   ├── options.html
+│   ├── options.css
+│   └── options.js
+├── popup/              
+│   ├── popup.html
+│   ├── popup.css
+│   └── popup.js
+├── src/      
+│   ├── background.js   
+│   ├── generator.js    
+│   ├── dictionary.json 
+│   ├── leakedCheck.js  
+│   ├── strength.js     
+│   └── uiModel.js 
+├── tests/ 
+│   ├── clear_script.sh
+│   ├── passphrase_generation_test.js
+│   ├── random_generation_test.js
+│   ├── README.md
+│   └── run_test.sh
+├── DIRECTORY_STRUCTURE.md
+└── manifest.json
