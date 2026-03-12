@@ -1,4 +1,6 @@
-![Alt text](extension/icons/icon-background.png)
+<!-- ![Alt text](extension/icons/icon-background.png) -->
+<img src="extension/icons/icon-background.png" width="65%" alt="Password Generator Icon Full" />
+
 # Memorable Password Generator Chrome Extension
 
 **Group:** Lily Spurgat, Sam Spurlock, Kate Spencer<br>
