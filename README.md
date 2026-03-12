@@ -61,19 +61,17 @@ git clone https://github.com/sspurlo2/password_generator.git
 The `extension/tests/` directory contains scripts that generate 100 passwords/passphrases and their scores, so we can analyze mean/median strength under different settings.
 
 ```bash
-npm install
 node extension/tests/passphrase_generation_test.js
 ```
 OR
 ```bash
-npm install
 node extension/tests/random_generation_test.js
 ```
 
 To do a full test run, we have a shell file that will run both tests. To run this, you must be in the /password_generator folder.
 
 ```bash
-/extension/tests/./run_test.sh
+extension/tests/./run_test.sh
 ```
 
 The test writes output to `extension/tests/passphrase_generation_results.json` or `extension/tests/random_generation_results.json` (both if using run_test.sh)
