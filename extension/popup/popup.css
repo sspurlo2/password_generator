@@ -140,7 +140,7 @@ button:hover, .button:hover {
 .very-weak { color: rgb(240, 65, 17); font-weight: 600; }
 .unacceptable { color: rgb(162, 0, 0); font-weight: 600; }
 
-/* Align Add Symbols checkbox with target length input in random mode */
+/* for random mode */
 .random-mode #symbolRow {
   align-self: flex-end;
 }
