@@ -6,6 +6,7 @@
   "icons": {
     "128": "/icons/icon_128.png"
   },
+  "description": "Generate passwords and passphrases that are memorable, personalized, and secure.",
   "action": {
     "default_title": "Password Tool",
     "default_popup": "popup/popup.html"
