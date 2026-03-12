@@ -5,7 +5,7 @@
 
 **Group:** Lily Spurgat, Sam Spurlock, Kate Spencer<br>
 **Course:** CS 433: Computer & Network Security<br>
-**Dates:** January 12 - March 15 2025<br>
+**Dates:** January 12 - March 15 2026<br>
 
 ## Problem Statement & Status Quo
 People often use insecure passwords or reuse the same password for multiple sites, creating security problems. Everyone struggles with creating passwords that are both memorable and secure! 
@@ -41,8 +41,8 @@ The default passphrase generator settings are:
 - Symbols & Symbol embedding disabled
 
 The default random password generator settings are:
-- 18 characters
-- Symbols disabled
+- 20 characters
+- Symbols enabled
 
 &nbsp;
 # How to run

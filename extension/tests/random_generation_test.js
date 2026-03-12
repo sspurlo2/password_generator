@@ -23,8 +23,8 @@ globalThis.fetch = async (url) => {
 
     const cfg1 = { // these are the default settings of the app
         mode: "random",
-        addSymbols: false,
-        targetLength: 18
+        addSymbols: true,
+        targetLength: 20
     };
 
     const cfg2 = { // 10 characters
