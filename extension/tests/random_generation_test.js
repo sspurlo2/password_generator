@@ -42,7 +42,7 @@ globalThis.fetch = async (url) => {
     const cfg4 = { // 20 characters
         mode: "random",
         addSymbols: true,
-        targetLength: 15
+        targetLength: 20
     };
 
     const cfg5 = { // 10 characters
@@ -60,7 +60,7 @@ globalThis.fetch = async (url) => {
     const cfg7 = { // 20 characters
         mode: "random",
         addSymbols: false,
-        targetLength: 15
+        targetLength: 20
     };
     
     const cfgs = [cfg1, cfg2, cfg3, cfg4, cfg5, cfg6, cfg7];

@@ -43,10 +43,18 @@ if (color_theme_checkbox) {   // load saved theme preference, default is dark
 function updateModeUI() {
   const isPassphrase = mode.value === "passphrase";
 
-  if (lengthRow) lengthRow.style.display = isPassphrase ? "none" : ""; // for random password only
-  if (wordsRow) wordsRow.style.display = isPassphrase ? "" : "none"; // for random passphrase only
+  // show length if random
+  if (lengthRow) lengthRow.style.display = isPassphrase ? "none" : "";
+  document.documentElement.classList.toggle('random-mode', !isPassphrase); // specific to random mode
+  
+  // show seperator, capitalization, & digits if passphrase
+  if (seperatorRow) seperatorRow.style.display = isPassphrase ? "" : "none";
+  if (capRow) capRow.style.display = isPassphrase ? "" : "none"; 
+  if (digitRow) digitRow.style.display = isPassphrase ? "" : "none";
+  if (embedRow) embedRow.style.display = isPassphrase ? "" : "none"; 
+  if (wordsRow) wordsRow.style.display = isPassphrase ? "" : "none";
 
-  // want random to score high by default
+  // make random reliably score high by default:
   if (!isPassphrase) {
     if (symbol && symbol.checked === false) symbol.checked = true;
     const n = Number(length?.value);
