@@ -245,21 +245,6 @@ function buildRandom({ targetLength, addSymbols }) {
 }
 
 export function generatePassword(cfg) {
-  // #region agent log
-  fetch("http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      location: "generator.js:generatePassword",
-      message: "generatePassword entered",
-      data: { mode: cfg?.mode, cfg },
-      timestamp: Date.now(),
-      runId: "run1",
-      hypothesisId: "H1",
-    }),
-  }).catch(() => {});
-  // #endregion
-
   const { // these are the defaults
     mode,
     targetLength = 20, // ONLY used for random mode
@@ -296,22 +281,6 @@ export function generatePassword(cfg) {
     }
     
     const out = buildRandom({ targetLength: default_len, addSymbols });
-
-    // #region agent log
-    fetch("http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        location: "generator.js:generatePassword",
-        message: "random password generated",
-        data: { len: out.length, preview: out.slice(0, 4) },
-        timestamp: Date.now(),
-        runId: "run1",
-        hypothesisId: "H2",
-      }),
-    }).catch(() => {});
-    // #endregion
-
     return out;
   }
 
@@ -326,21 +295,5 @@ export function generatePassword(cfg) {
   pw = injectDigits(pw, addDigits);
   pw = injectSymbol(pw, addSymbols);
   pw = replaceDigits(pw, numReplacements);
-
-  // #region agent log
-  fetch("http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      location: "generator.js:generatePassword",
-      message: "passphrase password generated",
-      data: { len: pw.length, numWords: default_wrdcnt },
-      timestamp: Date.now(),
-      runId: "run1",
-      hypothesisId: "H3",
-    }),
-  }).catch(() => {});
-  // #endregion
-
   return pw;
 }

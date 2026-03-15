@@ -82,21 +82,6 @@ updateModeUI();
 mode.addEventListener("change", updateModeUI);
 
 generateBtn.addEventListener("click", async () => {
-  // #region agent log
-  fetch("http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      location: "popup.js:Generate",
-      message: "Generate button clicked",
-      data: { symbolChecked: symbol.checked },
-      timestamp: Date.now(),
-      runId: "run1",
-      hypothesisId: "H1",
-    }),
-  }).catch(() => {});
-  // #endregion
-
   const cfg = {
     mode: mode.value,
     targetLength: Number(length.value),
@@ -108,55 +93,12 @@ generateBtn.addEventListener("click", async () => {
     numReplacements: embed.checked ? 2 : false,
     mixed_bank: await storageGet("mixed_bank") ?? false,
   };
-  
-  // #region agent log
-  fetch("http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      location: "popup.js:Config",
-      message: "Config before generatePassword",
-      data: { cfg },
-      timestamp: Date.now(),
-      runId: "run1",
-      hypothesisId: "H2",
-    }),
-  }).catch(() => {});
-  // #endregion
-  // #region agent log
-  fetch("http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      location: "popup.js:BeforeGenerate",
-      message: "About to call generatePassword",
-      data: { mode: cfg.mode },
-      timestamp: Date.now(),
-      runId: "run1",
-      hypothesisId: "H3",
-    }),
-  }).catch(() => {});
-  // #endregion
 
   let generatedValue = "";
   let generationError = null;
   try {
     generatedValue = generatePassword(cfg);
   } catch (e) {
-    // #region agent log
-    fetch("http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        location: "popup.js:GenerateError",
-        message: "generatePassword threw",
-        data: { error: String(e && e.message || e) },
-        timestamp: Date.now(),
-        runId: "run1",
-        hypothesisId: "H4",
-      }),
-    }).catch(() => {});
-    // #endregion
     generationError = e && e.message ? e.message : "Unknown error";
   }
 
@@ -219,7 +161,6 @@ async function renderResults(model) {
   if (leaked !== null) {
     whyItems.push(`<div>Password has been leaked <span class="leak-count">${leaked}</span> times.</div>`);
   }
-  // scoreLabel is now an object: { text, className }
   const labelText = scoreLabel?.text || scoreLabel;
   const labelClass = scoreLabel?.className || "";
 
