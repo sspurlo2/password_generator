@@ -17,7 +17,7 @@ const SYMBOL_DICTIONARY = {
   Z: "2",
 };
 
-// custom word bank support (for Options page)
+// custom word bank support (for options.js)
 export const WORD_BANK_STORAGE_KEY = "customWordBank";
 let CACHED_CUSTOM_WORD_BANK = null;
 
@@ -260,10 +260,10 @@ export function generatePassword(cfg) {
   }).catch(() => {});
   // #endregion
 
-  const {
+  const { // these are the defaults
     mode,
-    targetLength = 18, // ONLY used for random mode
-    numWords = 4,
+    targetLength = 20, // ONLY used for random mode
+    numWords = 4, // ONLY used for passphrase mode
     separator = "-",
     addCapitalization = true,
     addDigits = true,
@@ -272,13 +272,30 @@ export function generatePassword(cfg) {
     mixed_bank = false,
   } = cfg;
 
-  const safeNumWords = Number.isFinite(numWords) ? Math.max(1, Math.min(10, numWords)) : 4; // 1 - 10 guardrails
+  let default_wrdcnt = 4;
+  if (Number.isFinite(numWords)) { // these errors print from popup.js
+    if (numWords < 2) {
+      throw new Error("ERROR: Passphrase cannot have less than 2 words");
+    }
+    if (numWords > 10) {
+      throw new Error("ERROR: Passphrase cannot have more than 10 words");
+    }
+    default_wrdcnt = Math.max(2, Math.min(10, numWords)); // 2 - 10 guardrails
+  }
 
   if (mode === "random") {
-    // random passwords respect targetLength
-    const safeLen = Number.isFinite(targetLength) ? Math.max(8, Math.min(128, targetLength)) : 18;
-
-    const out = buildRandom({ targetLength: safeLen, addSymbols });
+    let default_len = 20;
+    if (Number.isFinite(targetLength)) { // these errors print from popup.js
+      if (targetLength < 8) {
+      throw new Error("ERROR: Password cannot have less than 8 characters");
+      }
+      if (targetLength > 128) {
+        throw new Error("ERROR: Password cannot have more than 128 characters");
+      }
+      default_len = Math.max(8, Math.min(128, targetLength)); // 8 - 128 guardrails
+    }
+    
+    const out = buildRandom({ targetLength: default_len, addSymbols });
 
     // #region agent log
     fetch("http://127.0.0.1:7242/ingest/f0fc06d4-31b7-4e3a-a491-35983ecf4926", {
@@ -300,7 +317,7 @@ export function generatePassword(cfg) {
 
   // memorable passwords respect number of words
   let pw = buildPassphrase({
-    numWords: safeNumWords,
+    numWords: default_wrdcnt,
     separator,
     addCapitalization,
     mixed_bank,
@@ -317,7 +334,7 @@ export function generatePassword(cfg) {
     body: JSON.stringify({
       location: "generator.js:generatePassword",
       message: "passphrase password generated",
-      data: { len: pw.length, numWords: safeNumWords },
+      data: { len: pw.length, numWords: default_wrdcnt },
       timestamp: Date.now(),
       runId: "run1",
       hypothesisId: "H3",

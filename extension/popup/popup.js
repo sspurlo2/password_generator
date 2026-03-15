@@ -139,6 +139,7 @@ generateBtn.addEventListener("click", async () => {
   // #endregion
 
   let generatedValue = "";
+  let generationError = null;
   try {
     generatedValue = generatePassword(cfg);
   } catch (e) {
@@ -156,19 +157,23 @@ generateBtn.addEventListener("click", async () => {
       }),
     }).catch(() => {});
     // #endregion
-    generatedValue = "";
+    generationError = e && e.message ? e.message : "Unknown error";
   }
 
   generated.value = generatedValue;
 
-  // show strength and leak check for the generated password
-  if (generatedInfo && generated.value) {
-    try {
-      const { scoreHTML, leakedHTML } = await check_generated_password(generated.value);
-      generatedInfo.innerHTML = scoreHTML + leakedHTML;
-    } catch (e) {
-      console.error("Generated password check failed:", e);
-      generatedInfo.innerHTML = "";
+  // show strength and leak check for the generated password, or error message
+  if (generatedInfo) {
+    if (generationError) {
+      generatedInfo.innerHTML = `<div class="pw-leak leaked" style="color: rgb(162, 0, 0);"><strong>${generationError}<strong></div>`;
+    } else if (generated.value) {
+      try {
+        const { scoreHTML, leakedHTML } = await check_generated_password(generated.value);
+        generatedInfo.innerHTML = scoreHTML + leakedHTML;
+      } catch (e) {
+        console.error("Generated password check failed:", e);
+        generatedInfo.innerHTML = "";
+      }
     }
   }
 });
